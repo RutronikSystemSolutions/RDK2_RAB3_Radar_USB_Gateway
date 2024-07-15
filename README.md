@@ -30,7 +30,7 @@ To program the RDK2, use the Kit Prog3 USB connector.
 
 2) Start the GUI and click on connect.
 
-<img src="pictures/radar_processing.png" style="zoom:50%;" />
+<img src="pictures/radar_processing.PNG" style="zoom:50%;" />
 
 3) Press the USER BTN1 on the RDK2 to start the data generation.
 
