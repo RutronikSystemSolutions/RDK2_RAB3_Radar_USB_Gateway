@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Compile Update="BackgroundFilterConfigurationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="TargetDetectionConfigurationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ThresholdConfigurationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Views\AnglePresenceView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\DBFView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\DopplerFFTView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\EnergyOverTimeView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\RangeFFTView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\TimeSignalView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+  </ItemGroup>
+</Project>
