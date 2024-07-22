@@ -1,6 +1,6 @@
-# RDK2 - Digital signal processing using RAB3 Radar and RDK2
+# RDK2 Digital signal processing using RAB3 Radar and GUI
 
-This code example demonstrates digital signal processing implemented on computer side to be used with a BGT60TR13C radar sensor from Infineon and a RDK2 development board from Rutronik.
+This code example demonstrates digital signal processing implemented on the computer side to be used with a BGT60TR13C radar sensor from Infineon and an RDK2 development board from Rutronik.
 
 <img src="pictures/rdk2_rab3.png" style="zoom:25%;" />
 
@@ -41,7 +41,7 @@ Remark: in case no data are received, close the GUI, press the reset button on t
 ## Change the radar configuration
 You can change the radar configuration used to measure by generating a new "radar_settings.h" configuration.
 
-Use the tool provided by Infineon “[Radar Fusion GUI](https://softwaretools.infineon.com/tools/com.ifx.tb.tool.ifxradargui)” to generate a new version of the file.
+Use the Infineon “Radar Fusion GUI” tool to generate a new version of the file.
 
 ## Libraries
 

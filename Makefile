@@ -46,7 +46,7 @@ TARGET=APP_RDK2
 #
 # If APPNAME is edited, ensure to update or regenerate launch
 # configurations for your IDE.
-APPNAME=rdk2-usb-cdc-test
+APPNAME=rdk2-rab3-radar-dsp-gui
 
 # Name of toolchain to use. Options include:
 #
