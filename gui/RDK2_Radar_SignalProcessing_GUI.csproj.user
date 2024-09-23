@@ -25,6 +25,12 @@
     <Compile Update="Views\EnergyOverTimeView.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Views\GestureView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\GestureViewTime.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Views\RangeFFTView.cs">
       <SubType>UserControl</SubType>
     </Compile>

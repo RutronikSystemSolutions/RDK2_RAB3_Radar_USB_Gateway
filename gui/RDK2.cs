@@ -110,9 +110,17 @@ namespace RDK2_Radar_SignalProcessing_GUI
             //int samplesPerChirp = 128;
             //int chirpsPerFrame = 16;
             //int antennaCount = 1;
-            int samplesPerChirp = 128;
+
+            /*int samplesPerChirp = 128;
             int chirpsPerFrame = 64;
-            int antennaCount = 2;
+            int antennaCount = 2;*/
+
+            //int samplesPerChirp = 64;
+            int samplesPerChirp = 32;
+            int chirpsPerFrame = 64;
+            //int antennaCount = 2;
+            int antennaCount = 3;
+
             int samplesPerFrame = samplesPerChirp * chirpsPerFrame * antennaCount;
             int bytesPerFrame = samplesPerFrame * 2;
 

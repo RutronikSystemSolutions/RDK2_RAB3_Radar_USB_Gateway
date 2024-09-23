@@ -26,11 +26,17 @@ namespace RDK2_Radar_SignalProcessing_GUI
         public delegate void OnNewDBFOutputEventHandler(object sender, System.Numerics.Complex[,] dbfOutput);
         public event OnNewDBFOutputEventHandler? OnNewDBFOutput;
 
+        public delegate void OnNew2DBFOutputEventHandler(object sender, System.Numerics.Complex[,] dbfOutputH, System.Numerics.Complex[,] dbfOutputV);
+        public event OnNew2DBFOutputEventHandler? OnNew2DBFOutput;
+
         public delegate void OnNewTargetDetectedEventHandler(object sender, bool detected, double angle, double range);
         public event OnNewTargetDetectedEventHandler? OnNewTargetDetected;
 
         public delegate void OnNewDopplerFFTMatrixEventHandler(object sender, System.Numerics.Complex[,] dopplerFFTMatrix, int antennaIndex);
         public event OnNewDopplerFFTMatrixEventHandler? OnNewDopplerFFTMatrix;
+
+        public delegate void OnNewDopplerFFTMatrix3EventHandler(object sender, System.Numerics.Complex[,] dopplerFFTMatrixRx1, System.Numerics.Complex[,] dopplerFFTMatrixRx2, System.Numerics.Complex[,] dopplerFFTMatrixRx3);
+        public event OnNewDopplerFFTMatrix3EventHandler? OnNewDopplerFFTMatrix3;
 
         #endregion
 
@@ -163,6 +169,12 @@ namespace RDK2_Radar_SignalProcessing_GUI
             // Used to compute DBF and background
             System.Numerics.Complex[] spectrumAvg0 = new System.Numerics.Complex[spectrumLen];
             System.Numerics.Complex[] spectrumAvg1 = new System.Numerics.Complex[spectrumLen];
+            System.Numerics.Complex[] spectrumAvg2 = new System.Numerics.Complex[spectrumLen];
+
+            System.Numerics.Complex[,] dopplerFFTMatrixRx1 = null;
+            System.Numerics.Complex[,] dopplerFFTMatrixRx2 = null;
+            System.Numerics.Complex[,] dopplerFFTMatrixRx3 = null;
+
 
             // Extract per antenna
             for (int antennaIndex = 0; antennaIndex < radarConfiguration.AntennaCount; antennaIndex++)
@@ -245,6 +257,14 @@ namespace RDK2_Radar_SignalProcessing_GUI
                     }
                 }
 
+                // Store
+                if (antennaIndex == 0) dopplerFFTMatrixRx1 = dopplerFFTMatrix;
+                else if (antennaIndex == 1) dopplerFFTMatrixRx2 = dopplerFFTMatrix;
+                else if (antennaIndex == 2) dopplerFFTMatrixRx3 = dopplerFFTMatrix;
+
+                if (antennaIndex == 2)
+                    OnNewDopplerFFTMatrix3?.Invoke(this, dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
+
                 // Compute spectrum average
                 for (int chirpIndex = 0; chirpIndex < radarConfiguration.ChirpsPerFrame; chirpIndex++)
                 {
@@ -258,6 +278,10 @@ namespace RDK2_Radar_SignalProcessing_GUI
                         {
                             spectrumAvg1[freqIndex] += rangeFFTMatrix[chirpIndex, freqIndex];
                         }
+                        else if (antennaIndex == 2)
+                        {
+                            spectrumAvg2[freqIndex] += rangeFFTMatrix[chirpIndex, freqIndex];
+                        }
                     }
                 }
                 for (int freqIndex = 0; freqIndex < spectrumLen; freqIndex++)
@@ -270,11 +294,16 @@ namespace RDK2_Radar_SignalProcessing_GUI
                     {
                         spectrumAvg1[freqIndex] /= radarConfiguration.ChirpsPerFrame;
                     }
+                    else if (antennaIndex == 2)
+                    {
+                        spectrumAvg2[freqIndex] /= radarConfiguration.ChirpsPerFrame;
+                    }
                 }
 
                 // Send spectrum as event
                 if (antennaIndex == 0) sendSpectrumEvent(spectrumAvg0, antennaIndex);
                 else if (antennaIndex == 1) sendSpectrumEvent(spectrumAvg1, antennaIndex);
+                else if (antennaIndex == 2) sendSpectrumEvent(spectrumAvg2, antennaIndex);
 
                 // Update background remover and remove in place
                 if (antennaIndex == 0)
@@ -286,6 +315,11 @@ namespace RDK2_Radar_SignalProcessing_GUI
                 {
                     backgroundRemover[antennaIndex].feed(spectrumAvg1);
                     backgroundRemover[antennaIndex].removeBackgroundInPlace(spectrumAvg1);
+                }
+                else if (antennaIndex == 2)
+                {
+                    backgroundRemover[antennaIndex].feed(spectrumAvg2);
+                    backgroundRemover[antennaIndex].removeBackgroundInPlace(spectrumAvg2);
                 }
 
                 OnNewEnergyOverTime?.Invoke(this, maxAmplitude, threshold[antennaIndex], antennaIndex);
@@ -302,8 +336,12 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
             // Compute DBF
             // [beam/angle , range]
-            System.Numerics.Complex[,] dbfOut = dbf.compute(spectrumAvg0, spectrumAvg1);
-            OnNewDBFOutput?.Invoke(this, dbfOut);
+            //System.Numerics.Complex[,] dbfOut = dbf.compute(spectrumAvg0, spectrumAvg1);
+
+            System.Numerics.Complex[,] dbfOutH = dbf.compute(spectrumAvg0, spectrumAvg2);
+            System.Numerics.Complex[,] dbfOutV = dbf.compute(spectrumAvg1, spectrumAvg2);
+            OnNewDBFOutput?.Invoke(this, dbfOutH);
+            OnNew2DBFOutput?.Invoke(this, dbfOutH, dbfOutV);
 
             if (somethingDetected[0]  && somethingDetected[1])
             {
@@ -317,10 +355,10 @@ namespace RDK2_Radar_SignalProcessing_GUI
                 colIndex = rangeOfMax[0];
 
                 // Get the biggest row for a given column
-                double max = dbfOut[0, colIndex].Magnitude;
-                for(int i = 1; i < dbfOut.GetLength(0); ++i)
+                double max = dbfOutH[0, colIndex].Magnitude;
+                for(int i = 1; i < dbfOutH.GetLength(0); ++i)
                 {
-                    double mag = dbfOut[i, colIndex].Magnitude;
+                    double mag = dbfOutH[i, colIndex].Magnitude;
                     if (mag > max)
                     {
                         max = mag;

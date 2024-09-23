@@ -99,7 +99,7 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
                 range = double.NaN;
             }
             detectedPresenceSeries.Points.Add(new ScatterPoint(x: angle, y: range, value: 15));
-            if (detectedPresenceSeries.Points.Count > 10)
+            if (detectedPresenceSeries.Points.Count > 1)
             {
                 detectedPresenceSeries.Points.RemoveAt(0);
             }

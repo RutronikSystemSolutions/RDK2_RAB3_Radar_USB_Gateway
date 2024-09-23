@@ -34,7 +34,7 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
                 //Palette = OxyPalettes.Rainbow(100)
                 Palette = OxyPalettes.Viridis(100),
                 Minimum = 0,
-                Maximum = 1
+                Maximum = 0.05
             });
 
             // generate 1d normal distributionradaradar
@@ -68,6 +68,47 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 
         public void UpdateData(double[,] data)
         {
+            /*
+            // only keep the maximum point
+            int maxx = 0;
+            int maxy = 0;
+            double maxvalue = data[maxx, maxy];
+            int beamCount = data.GetLength(0);
+            int freqBinCount = data.GetLength(1);
+
+            for(int x = 0; x < beamCount; ++x)
+            {
+                for(int y = 0; y < freqBinCount; ++y)
+                {
+                    if (data[x, y] > maxvalue)
+                    {
+                        maxvalue = data[x, y];
+                        maxx = x;
+                        maxy = y;
+                    }
+                }
+            }
+
+            for (int x = 0; x < beamCount; ++x)
+            {
+                for (int y = 0; y < freqBinCount; ++y)
+                {
+                    if (x == maxx && y == maxy)
+                    {
+                        if (maxvalue > 0.05)
+                            data[x, y] = 1;
+                        else
+                            data[x, y] = 0;
+                    }
+                    else
+                    {
+                        data[x, y] = 0;
+                    }
+                }
+            }
+            */
+
+
             // TODO make it depends on the radar configuration
             if (heatMapSeries == null) return;
             heatMapSeries.Data = data;

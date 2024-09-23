@@ -28,6 +28,37 @@ namespace RDK2_Radar_SignalProcessing_GUI
             radarSignalProcessor.OnNewDBFOutput += RadarSignalProcessor_OnNewDBFOutput;
             radarSignalProcessor.OnNewTargetDetected += RadarSignalProcessor_OnNewTargetDetected;
             radarSignalProcessor.OnNewDopplerFFTMatrix += RadarSignalProcessor_OnNewDopplerFFTMatrix;
+            //radarSignalProcessor.OnNew2DBFOutput += RadarSignalProcessor_OnNew2DBFOutput;
+
+            radarSignalProcessor.OnNewDopplerFFTMatrix3 += RadarSignalProcessor_OnNewDopplerFFTMatrix3;
+        }
+
+        private void RadarSignalProcessor_OnNewDopplerFFTMatrix3(object sender, System.Numerics.Complex[,] dopplerFFTMatrixRx1, System.Numerics.Complex[,] dopplerFFTMatrixRx2, System.Numerics.Complex[,] dopplerFFTMatrixRx3)
+        {
+            // Let's go! -> compute angle and display max
+            gestureView.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
+            gestureViewTime.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
+        }
+
+        private void RadarSignalProcessor_OnNew2DBFOutput(object sender, System.Numerics.Complex[,] dbfOutputH, System.Numerics.Complex[,] dbfOutputV)
+        {
+            // Convert for DBF view
+            int beamCount = dbfOutputH.GetLength(0);
+            int freqBinCount = dbfOutputH.GetLength(1);
+
+            double[,] dbfMagnitudeH = new double[beamCount, freqBinCount];
+            double[,] dbfMagnitudeV = new double[beamCount, freqBinCount];
+            for (int i = 0; i < beamCount; ++i)
+            {
+                for (int j = 0; j < freqBinCount; ++j)
+                {
+                    dbfMagnitudeH[i, j] = dbfOutputH[i, j].Magnitude;
+                    dbfMagnitudeV[i, j] = dbfOutputV[i, j].Magnitude;
+                }
+            }
+
+            gestureView.UpdateData(dbfMagnitudeH, dbfMagnitudeV);
+            gestureViewTime.UpdateData(dbfMagnitudeH, dbfMagnitudeV);
         }
 
         private void RadarSignalProcessor_OnNewDopplerFFTMatrix(object sender, System.Numerics.Complex[,] dopplerFFTMatrix, int antennaIndex)
@@ -56,7 +87,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
         private void RadarSignalProcessor_OnNewTargetDetected(object sender, bool detected, double angle, double range)
         {
             anglePresenceView.SignalPresenceDetected(detected, angle, range);
-            System.Diagnostics.Debug.WriteLine("Detected: " + angle.ToString() + "° range: " + range.ToString());
+            //System.Diagnostics.Debug.WriteLine("Detected: " + angle.ToString() + "° range: " + range.ToString());
         }
 
         private void RadarSignalProcessor_OnNewDBFOutput(object sender, System.Numerics.Complex[,] dbfOutput)
