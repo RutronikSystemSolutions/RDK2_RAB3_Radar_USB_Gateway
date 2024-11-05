@@ -25,45 +25,15 @@ namespace RDK2_Radar_SignalProcessing_GUI
             radarSignalProcessor.OnNewFormattedTimeSignal += RadarSignalProcessor_OnNewFormattedTimeSignal;
             radarSignalProcessor.OnNewFrameSpectrum += RadarSignalProcessor_OnNewFrameSpectrum;
             radarSignalProcessor.OnNewEnergyOverTime += RadarSignalProcessor_OnNewEnergyOverTime;
-            radarSignalProcessor.OnNewDBFOutput += RadarSignalProcessor_OnNewDBFOutput;
-            radarSignalProcessor.OnNewTargetDetected += RadarSignalProcessor_OnNewTargetDetected;
-            radarSignalProcessor.OnNewDopplerFFTMatrix += RadarSignalProcessor_OnNewDopplerFFTMatrix;
-            //radarSignalProcessor.OnNew2DBFOutput += RadarSignalProcessor_OnNew2DBFOutput;
-
             radarSignalProcessor.OnNewDopplerFFTMatrix3 += RadarSignalProcessor_OnNewDopplerFFTMatrix3;
         }
 
         private void RadarSignalProcessor_OnNewDopplerFFTMatrix3(object sender, System.Numerics.Complex[,] dopplerFFTMatrixRx1, System.Numerics.Complex[,] dopplerFFTMatrixRx2, System.Numerics.Complex[,] dopplerFFTMatrixRx3)
         {
             // Let's go! -> compute angle and display max
-            gestureView.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
+            //gestureView.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
+            gestureViewScatter.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
             gestureViewTime.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
-        }
-
-        private void RadarSignalProcessor_OnNew2DBFOutput(object sender, System.Numerics.Complex[,] dbfOutputH, System.Numerics.Complex[,] dbfOutputV)
-        {
-            // Convert for DBF view
-            int beamCount = dbfOutputH.GetLength(0);
-            int freqBinCount = dbfOutputH.GetLength(1);
-
-            double[,] dbfMagnitudeH = new double[beamCount, freqBinCount];
-            double[,] dbfMagnitudeV = new double[beamCount, freqBinCount];
-            for (int i = 0; i < beamCount; ++i)
-            {
-                for (int j = 0; j < freqBinCount; ++j)
-                {
-                    dbfMagnitudeH[i, j] = dbfOutputH[i, j].Magnitude;
-                    dbfMagnitudeV[i, j] = dbfOutputV[i, j].Magnitude;
-                }
-            }
-
-            gestureView.UpdateData(dbfMagnitudeH, dbfMagnitudeV);
-            gestureViewTime.UpdateData(dbfMagnitudeH, dbfMagnitudeV);
-        }
-
-        private void RadarSignalProcessor_OnNewDopplerFFTMatrix(object sender, System.Numerics.Complex[,] dopplerFFTMatrix, int antennaIndex)
-        {
-            if (antennaIndex == 0) dopplerfftView.UpdateData(dopplerFFTMatrix);
         }
 
         private void Rdk2_OnNewConnectionState(object sender, RDK2.ConnectionState state)
@@ -82,29 +52,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
                     connectButton.Enabled = true;
                     break;
             }
-        }
-
-        private void RadarSignalProcessor_OnNewTargetDetected(object sender, bool detected, double angle, double range)
-        {
-            anglePresenceView.SignalPresenceDetected(detected, angle, range);
-            //System.Diagnostics.Debug.WriteLine("Detected: " + angle.ToString() + "° range: " + range.ToString());
-        }
-
-        private void RadarSignalProcessor_OnNewDBFOutput(object sender, System.Numerics.Complex[,] dbfOutput)
-        {
-            // Convert for DBF view
-            int beamCount = dbfOutput.GetLength(0);
-            int freqBinCount = dbfOutput.GetLength(1);
-            double[,] dbfMagnitude = new double[beamCount, freqBinCount];
-            for (int i = 0; i < beamCount; ++i)
-            {
-                for (int j = 0; j < freqBinCount; ++j)
-                {
-                    dbfMagnitude[i, j] = dbfOutput[i, j].Magnitude;
-                }
-            }
-            dbfView.UpdateData(dbfMagnitude);
-        }
+        }        
 
         private void RadarSignalProcessor_OnNewEnergyOverTime(object sender, double energy, double threshold, int antennaIndex)
         {
@@ -124,7 +72,6 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
         private void Rdk2_OnNewFrame(object sender, ushort[] frame)
         {
-            //radarSignalProcessor.feed(frame);
             radarSignalProcessor.feedDopplerFFT(frame);
         }
 

@@ -8,15 +8,21 @@ namespace RDK2_Radar_SignalProcessing_GUI
 {
     public class RadarConfiguration
     {
-        private double startFrequency = 61020000000;
-        private double endFrequency = 61480000000;
-        private double samplingRate = 2352941;
-        //private int samplesPerChirp = 128;
-        //private int samplesPerChirp = 64;
-        private int samplesPerChirp = 32;
-        private int chirpsPerFrame = 64;
-        //private int antennaCount = 2;
-        private int antennaCount = 3;
+        public static double START_FREQUENCY = 61020000000;
+        public static double END_FREQUENCY = 61480000000;
+        public static double SAMPLING_RATE = 2352941;
+
+        public static int SAMPLES_PER_CHIRP = 32;
+        public static int CHIRPS_PER_FRAME = 64;
+        public static int ANTENNA_COUNT = 3;
+
+        private double startFrequency = START_FREQUENCY;
+        private double endFrequency = END_FREQUENCY;
+        private double samplingRate = SAMPLING_RATE;
+        
+        private int samplesPerChirp = SAMPLES_PER_CHIRP;
+        private int chirpsPerFrame = CHIRPS_PER_FRAME;
+        private int antennaCount = ANTENNA_COUNT;
 
         public RadarConfiguration()
         {

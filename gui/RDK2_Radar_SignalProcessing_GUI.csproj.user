@@ -28,6 +28,9 @@
     <Compile Update="Views\GestureView.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Views\GestureViewScatter.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Views\GestureViewTime.cs">
       <SubType>UserControl</SubType>
     </Compile>

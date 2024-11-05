@@ -15,10 +15,10 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 {
     public partial class RangeFFTView : UserControl
     {
-        private double startFrequency = 61020000000;
-        private double endFrequency = 61480000000;
-        private double samplingRate = 2352941;
-        private int samplesPerChirp = 128;
+        private double startFrequency = RadarConfiguration.START_FREQUENCY;
+        private double endFrequency = RadarConfiguration.END_FREQUENCY;
+        private double samplingRate = RadarConfiguration.SAMPLING_RATE;
+        private int samplesPerChirp = RadarConfiguration.SAMPLES_PER_CHIRP;
 
         /// <summary>
         /// X Axis
@@ -57,19 +57,12 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 
         private LineSeries spectrumAntenna0LineSeries = new LineSeries();
         private LineSeries spectrumAntenna1LineSeries = new LineSeries();
+        private LineSeries spectrumAntenna2LineSeries = new LineSeries();
 
         public RangeFFTView()
         {
             InitializeComponent();
             InitPlot();
-        }
-
-        public void setRadarParameters(double startFrequency, double endFrequency, double samplingRate, int samplesPerChirp)
-        {
-            this.startFrequency = startFrequency;
-            this.endFrequency = endFrequency;
-            this.samplingRate = samplingRate;
-            this.samplesPerChirp = samplesPerChirp;
         }
 
         public void setSpectrumDBFS(double[] spectrum, int antennaIndex)
@@ -100,6 +93,17 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
                     double rangeMeters = (celerity * freq) / (2 * slope);
                     spectrumAntenna1LineSeries.Points.Add(new DataPoint(rangeMeters, spectrum[i]));
                 }
+            }
+            else if (antennaIndex == 2)
+            {
+                spectrumAntenna2LineSeries.Points.Clear();
+                for (int i = 0; i < spectrum.Length; ++i)
+                {
+                    double fractionFs = i / ((fftLen - 1) * 2);
+                    double freq = fractionFs * samplingRate;
+                    double rangeMeters = (celerity * freq) / (2 * slope);
+                    spectrumAntenna2LineSeries.Points.Add(new DataPoint(rangeMeters, spectrum[i]));
+                }
                 plotView.InvalidatePlot(true);
             }
         }
@@ -124,8 +128,12 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             spectrumAntenna1LineSeries.Title = "Antenna 1";
             spectrumAntenna1LineSeries.YAxisKey = yAxisSpectrum.Key;
 
+            spectrumAntenna2LineSeries.Title = "Antenna 2";
+            spectrumAntenna2LineSeries.YAxisKey = yAxisSpectrum.Key;
+
             timeModel.Series.Add(spectrumAntenna0LineSeries);
             timeModel.Series.Add(spectrumAntenna1LineSeries);
+            timeModel.Series.Add(spectrumAntenna2LineSeries);
 
             plotView.Model = timeModel;
             plotView.InvalidatePlot(true);

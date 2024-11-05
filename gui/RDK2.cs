@@ -106,20 +106,9 @@ namespace RDK2_Radar_SignalProcessing_GUI
             BackgroundWorker worker = (BackgroundWorker)sender;
             port.ReadExisting();
 
-            // One frame => 4096 bytes (128 * 16 samples)
-            //int samplesPerChirp = 128;
-            //int chirpsPerFrame = 16;
-            //int antennaCount = 1;
-
-            /*int samplesPerChirp = 128;
-            int chirpsPerFrame = 64;
-            int antennaCount = 2;*/
-
-            //int samplesPerChirp = 64;
-            int samplesPerChirp = 32;
-            int chirpsPerFrame = 64;
-            //int antennaCount = 2;
-            int antennaCount = 3;
+            int samplesPerChirp = RadarConfiguration.SAMPLES_PER_CHIRP;
+            int chirpsPerFrame = RadarConfiguration.CHIRPS_PER_FRAME;
+            int antennaCount = RadarConfiguration.ANTENNA_COUNT;
 
             int samplesPerFrame = samplesPerChirp * chirpsPerFrame * antennaCount;
             int bytesPerFrame = samplesPerFrame * 2;

@@ -52,6 +52,7 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 
         private LineSeries timeSignalAntenna0LineSeries = new LineSeries();
         private LineSeries timeSignalAntenna1LineSeries = new LineSeries();
+        private LineSeries timeSignalAntenna2LineSeries = new LineSeries();
 
         public TimeSignalView()
         {
@@ -79,8 +80,12 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             timeSignalAntenna1LineSeries.Title = "Antenna 1";
             timeSignalAntenna1LineSeries.YAxisKey = yAxis.Key;
 
+            timeSignalAntenna2LineSeries.Title = "Antenna 2";
+            timeSignalAntenna2LineSeries.YAxisKey = yAxis.Key;
+
             timeModel.Series.Add(timeSignalAntenna0LineSeries);
             timeModel.Series.Add(timeSignalAntenna1LineSeries);
+            timeModel.Series.Add(timeSignalAntenna2LineSeries);
 
             plotView.Model = timeModel;
             plotView.InvalidatePlot(true);
@@ -102,6 +107,14 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
                 for (int i = 0; i < signal.Length; ++i)
                 {
                     timeSignalAntenna1LineSeries.Points.Add(new DataPoint(i, signal[i]));
+                }
+            }
+            else if (antennaIndex == 2)
+            {
+                timeSignalAntenna2LineSeries.Points.Clear();
+                for (int i = 0; i < signal.Length; ++i)
+                {
+                    timeSignalAntenna2LineSeries.Points.Add(new DataPoint(i, signal[i]));
                 }
                 plotView.InvalidatePlot(true);
             }

@@ -31,8 +31,6 @@
             comPortLabel = new Label();
             comPortComboBox = new ComboBox();
             connectButton = new Button();
-            dbfView = new Views.DBFView();
-            anglePresenceView = new Views.AnglePresenceView();
             menuStrip = new MenuStrip();
             configurationToolStripMenuItem = new ToolStripMenuItem();
             backgroundFilterToolStripMenuItem = new ToolStripMenuItem();
@@ -43,7 +41,6 @@
             stopToolStripMenuItem = new ToolStripMenuItem();
             rdk2ConnectionStateTextBox = new TextBox();
             rangefftView = new Views.RangeFFTView();
-            dopplerfftView = new Views.DopplerFFTView();
             statusStrip1 = new StatusStrip();
             dataLoggerToolStripStatusLabel = new ToolStripStatusLabel();
             tabControl = new TabControl();
@@ -53,12 +50,9 @@
             tabPage2 = new TabPage();
             processedSplitContainer = new SplitContainer();
             energyOverTimeView = new Views.EnergyOverTimeView();
-            tabPage3 = new TabPage();
-            tabPage4 = new TabPage();
-            gestureViewTabPage = new TabPage();
-            gestureView = new Views.GestureView();
             gestureTimeTabPage = new TabPage();
             gestureViewTime = new Views.GestureViewTime();
+            gestureViewScatter = new Views.GestureViewScatter();
             menuStrip.SuspendLayout();
             statusStrip1.SuspendLayout();
             tabControl.SuspendLayout();
@@ -72,9 +66,6 @@
             processedSplitContainer.Panel1.SuspendLayout();
             processedSplitContainer.Panel2.SuspendLayout();
             processedSplitContainer.SuspendLayout();
-            tabPage3.SuspendLayout();
-            tabPage4.SuspendLayout();
-            gestureViewTabPage.SuspendLayout();
             gestureTimeTabPage.SuspendLayout();
             SuspendLayout();
             // 
@@ -104,24 +95,6 @@
             connectButton.Text = "Connect";
             connectButton.UseVisualStyleBackColor = true;
             connectButton.Click += connectButton_Click;
-            // 
-            // dbfView
-            // 
-            dbfView.BorderStyle = BorderStyle.FixedSingle;
-            dbfView.Dock = DockStyle.Fill;
-            dbfView.Location = new Point(3, 3);
-            dbfView.Name = "dbfView";
-            dbfView.Size = new Size(923, 400);
-            dbfView.TabIndex = 6;
-            // 
-            // anglePresenceView
-            // 
-            anglePresenceView.BorderStyle = BorderStyle.FixedSingle;
-            anglePresenceView.Dock = DockStyle.Fill;
-            anglePresenceView.Location = new Point(3, 3);
-            anglePresenceView.Name = "anglePresenceView";
-            anglePresenceView.Size = new Size(923, 400);
-            anglePresenceView.TabIndex = 7;
             // 
             // menuStrip
             // 
@@ -199,15 +172,6 @@
             rangefftView.Size = new Size(463, 400);
             rangefftView.TabIndex = 10;
             // 
-            // dopplerfftView
-            // 
-            dopplerfftView.BorderStyle = BorderStyle.FixedSingle;
-            dopplerfftView.Dock = DockStyle.Fill;
-            dopplerfftView.Location = new Point(0, 0);
-            dopplerfftView.Name = "dopplerfftView";
-            dopplerfftView.Size = new Size(463, 400);
-            dopplerfftView.TabIndex = 11;
-            // 
             // statusStrip1
             // 
             statusStrip1.ImageScalingSize = new Size(20, 20);
@@ -229,9 +193,6 @@
             tabControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tabControl.Controls.Add(tabPage1);
             tabControl.Controls.Add(tabPage2);
-            tabControl.Controls.Add(tabPage3);
-            tabControl.Controls.Add(tabPage4);
-            tabControl.Controls.Add(gestureViewTabPage);
             tabControl.Controls.Add(gestureTimeTabPage);
             tabControl.Location = new Point(12, 65);
             tabControl.Name = "tabControl";
@@ -299,7 +260,7 @@
             // 
             // processedSplitContainer.Panel2
             // 
-            processedSplitContainer.Panel2.Controls.Add(dopplerfftView);
+            processedSplitContainer.Panel2.Controls.Add(gestureViewScatter);
             processedSplitContainer.Size = new Size(923, 400);
             processedSplitContainer.SplitterDistance = 456;
             processedSplitContainer.TabIndex = 0;
@@ -312,48 +273,6 @@
             energyOverTimeView.Name = "energyOverTimeView";
             energyOverTimeView.Size = new Size(456, 400);
             energyOverTimeView.TabIndex = 14;
-            // 
-            // tabPage3
-            // 
-            tabPage3.Controls.Add(anglePresenceView);
-            tabPage3.Location = new Point(4, 29);
-            tabPage3.Name = "tabPage3";
-            tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(929, 406);
-            tabPage3.TabIndex = 2;
-            tabPage3.Text = "Angle view";
-            tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // tabPage4
-            // 
-            tabPage4.Controls.Add(dbfView);
-            tabPage4.Location = new Point(4, 29);
-            tabPage4.Name = "tabPage4";
-            tabPage4.Padding = new Padding(3);
-            tabPage4.Size = new Size(929, 406);
-            tabPage4.TabIndex = 3;
-            tabPage4.Text = "DBF View";
-            tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // gestureViewTabPage
-            // 
-            gestureViewTabPage.Controls.Add(gestureView);
-            gestureViewTabPage.Location = new Point(4, 29);
-            gestureViewTabPage.Name = "gestureViewTabPage";
-            gestureViewTabPage.Padding = new Padding(3);
-            gestureViewTabPage.Size = new Size(929, 406);
-            gestureViewTabPage.TabIndex = 4;
-            gestureViewTabPage.Text = "Gesture";
-            gestureViewTabPage.UseVisualStyleBackColor = true;
-            // 
-            // gestureView
-            // 
-            gestureView.BorderStyle = BorderStyle.FixedSingle;
-            gestureView.Dock = DockStyle.Fill;
-            gestureView.Location = new Point(3, 3);
-            gestureView.Name = "gestureView";
-            gestureView.Size = new Size(923, 400);
-            gestureView.TabIndex = 0;
             // 
             // gestureTimeTabPage
             // 
@@ -374,6 +293,15 @@
             gestureViewTime.Name = "gestureViewTime";
             gestureViewTime.Size = new Size(923, 400);
             gestureViewTime.TabIndex = 0;
+            // 
+            // gestureViewScatter
+            // 
+            gestureViewScatter.BorderStyle = BorderStyle.FixedSingle;
+            gestureViewScatter.Dock = DockStyle.Fill;
+            gestureViewScatter.Location = new Point(0, 0);
+            gestureViewScatter.Name = "gestureViewScatter";
+            gestureViewScatter.Size = new Size(463, 400);
+            gestureViewScatter.TabIndex = 0;
             // 
             // MainForm
             // 
@@ -406,9 +334,6 @@
             processedSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)processedSplitContainer).EndInit();
             processedSplitContainer.ResumeLayout(false);
-            tabPage3.ResumeLayout(false);
-            tabPage4.ResumeLayout(false);
-            gestureViewTabPage.ResumeLayout(false);
             gestureTimeTabPage.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
@@ -419,8 +344,6 @@
         private Label comPortLabel;
         private ComboBox comPortComboBox;
         private Button connectButton;
-        private Views.DBFView dbfView;
-        private Views.AnglePresenceView anglePresenceView;
         private MenuStrip menuStrip;
         private ToolStripMenuItem configurationToolStripMenuItem;
         private ToolStripMenuItem backgroundFilterToolStripMenuItem;
@@ -428,7 +351,6 @@
         private Views.RangeFFTView rangefftView;
         private ToolStripMenuItem thresholdToolStripMenuItem;
         private ToolStripMenuItem rangeToolStripMenuItem;
-        private Views.DopplerFFTView dopplerfftView;
         private ToolStripMenuItem dataLoggerToolStripMenuItem;
         private ToolStripMenuItem startToolStripMenuItem;
         private ToolStripMenuItem stopToolStripMenuItem;
@@ -437,15 +359,12 @@
         private TabControl tabControl;
         private TabPage tabPage1;
         private TabPage tabPage2;
-        private TabPage tabPage3;
-        private TabPage tabPage4;
         private SplitContainer processedSplitContainer;
         private SplitContainer rawSignalSplitContainer;
         private Views.TimeSignalView timeSignalView;
         private Views.EnergyOverTimeView energyOverTimeView;
-        private TabPage gestureViewTabPage;
-        private Views.GestureView gestureView;
         private TabPage gestureTimeTabPage;
         private Views.GestureViewTime gestureViewTime;
+        private Views.GestureViewScatter gestureViewScatter;
     }
 }

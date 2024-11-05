@@ -50,6 +50,7 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 
         private LineSeries energyOverTimeAntenna0LineSeries = new LineSeries();
         private LineSeries energyOverTimeAntenna1LineSeries = new LineSeries();
+        private LineSeries energyOverTimeAntenna2LineSeries = new LineSeries();
         private LineSeries dynamicThresholdLineSeries = new LineSeries();
 
         private double timeIndex = 0;
@@ -79,11 +80,15 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             energyOverTimeAntenna1LineSeries.Title = "Antenna 1";
             energyOverTimeAntenna1LineSeries.YAxisKey = yAxisEnergyOverTime.Key;
 
+            energyOverTimeAntenna2LineSeries.Title = "Antenna 2";
+            energyOverTimeAntenna2LineSeries.YAxisKey = yAxisEnergyOverTime.Key;
+
             dynamicThresholdLineSeries.Title = "Threshold";
             dynamicThresholdLineSeries.YAxisKey = yAxisEnergyOverTime.Key;
 
             timeModel.Series.Add(energyOverTimeAntenna0LineSeries);
             timeModel.Series.Add(energyOverTimeAntenna1LineSeries);
+            timeModel.Series.Add(energyOverTimeAntenna2LineSeries);
             timeModel.Series.Add(dynamicThresholdLineSeries);
 
             plotView.Model = timeModel;
@@ -106,6 +111,11 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             {
                 energyOverTimeAntenna1LineSeries.Points.Add(new DataPoint(timeIndex, energy));
                 if (energyOverTimeAntenna1LineSeries.Points.Count > 500) energyOverTimeAntenna1LineSeries.Points.RemoveAt(0);
+            }
+            else if (antennaIndex == 2)
+            {
+                energyOverTimeAntenna2LineSeries.Points.Add(new DataPoint(timeIndex, energy));
+                if (energyOverTimeAntenna2LineSeries.Points.Count > 500) energyOverTimeAntenna2LineSeries.Points.RemoveAt(0);
                 timeIndex += 1;
                 plotView.InvalidatePlot(true);
             }
