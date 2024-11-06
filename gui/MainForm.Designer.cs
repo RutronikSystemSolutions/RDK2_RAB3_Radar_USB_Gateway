@@ -48,11 +48,13 @@
             rawSignalSplitContainer = new SplitContainer();
             timeSignalView = new Views.TimeSignalView();
             tabPage2 = new TabPage();
-            processedSplitContainer = new SplitContainer();
             energyOverTimeView = new Views.EnergyOverTimeView();
+            gestureViewScatter = new Views.GestureViewScatter();
             gestureTimeTabPage = new TabPage();
             gestureViewTime = new Views.GestureViewTime();
-            gestureViewScatter = new Views.GestureViewScatter();
+            tabPage3 = new TabPage();
+            distanceView = new Views.DistanceView();
+            splitContainer1 = new SplitContainer();
             menuStrip.SuspendLayout();
             statusStrip1.SuspendLayout();
             tabControl.SuspendLayout();
@@ -62,11 +64,12 @@
             rawSignalSplitContainer.Panel2.SuspendLayout();
             rawSignalSplitContainer.SuspendLayout();
             tabPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)processedSplitContainer).BeginInit();
-            processedSplitContainer.Panel1.SuspendLayout();
-            processedSplitContainer.Panel2.SuspendLayout();
-            processedSplitContainer.SuspendLayout();
             gestureTimeTabPage.SuspendLayout();
+            tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
+            splitContainer1.Panel1.SuspendLayout();
+            splitContainer1.Panel2.SuspendLayout();
+            splitContainer1.SuspendLayout();
             SuspendLayout();
             // 
             // comPortLabel
@@ -194,6 +197,7 @@
             tabControl.Controls.Add(tabPage1);
             tabControl.Controls.Add(tabPage2);
             tabControl.Controls.Add(gestureTimeTabPage);
+            tabControl.Controls.Add(tabPage3);
             tabControl.Location = new Point(12, 65);
             tabControl.Name = "tabControl";
             tabControl.SelectedIndex = 0;
@@ -239,7 +243,7 @@
             // 
             // tabPage2
             // 
-            tabPage2.Controls.Add(processedSplitContainer);
+            tabPage2.Controls.Add(energyOverTimeView);
             tabPage2.Location = new Point(4, 29);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
@@ -248,31 +252,23 @@
             tabPage2.Text = "Processed";
             tabPage2.UseVisualStyleBackColor = true;
             // 
-            // processedSplitContainer
-            // 
-            processedSplitContainer.Dock = DockStyle.Fill;
-            processedSplitContainer.Location = new Point(3, 3);
-            processedSplitContainer.Name = "processedSplitContainer";
-            // 
-            // processedSplitContainer.Panel1
-            // 
-            processedSplitContainer.Panel1.Controls.Add(energyOverTimeView);
-            // 
-            // processedSplitContainer.Panel2
-            // 
-            processedSplitContainer.Panel2.Controls.Add(gestureViewScatter);
-            processedSplitContainer.Size = new Size(923, 400);
-            processedSplitContainer.SplitterDistance = 456;
-            processedSplitContainer.TabIndex = 0;
-            // 
             // energyOverTimeView
             // 
             energyOverTimeView.BorderStyle = BorderStyle.FixedSingle;
             energyOverTimeView.Dock = DockStyle.Fill;
-            energyOverTimeView.Location = new Point(0, 0);
+            energyOverTimeView.Location = new Point(3, 3);
             energyOverTimeView.Name = "energyOverTimeView";
-            energyOverTimeView.Size = new Size(456, 400);
+            energyOverTimeView.Size = new Size(923, 400);
             energyOverTimeView.TabIndex = 14;
+            // 
+            // gestureViewScatter
+            // 
+            gestureViewScatter.BorderStyle = BorderStyle.FixedSingle;
+            gestureViewScatter.Dock = DockStyle.Fill;
+            gestureViewScatter.Location = new Point(0, 0);
+            gestureViewScatter.Name = "gestureViewScatter";
+            gestureViewScatter.Size = new Size(459, 400);
+            gestureViewScatter.TabIndex = 0;
             // 
             // gestureTimeTabPage
             // 
@@ -294,14 +290,42 @@
             gestureViewTime.Size = new Size(923, 400);
             gestureViewTime.TabIndex = 0;
             // 
-            // gestureViewScatter
+            // tabPage3
             // 
-            gestureViewScatter.BorderStyle = BorderStyle.FixedSingle;
-            gestureViewScatter.Dock = DockStyle.Fill;
-            gestureViewScatter.Location = new Point(0, 0);
-            gestureViewScatter.Name = "gestureViewScatter";
-            gestureViewScatter.Size = new Size(463, 400);
-            gestureViewScatter.TabIndex = 0;
+            tabPage3.Controls.Add(splitContainer1);
+            tabPage3.Location = new Point(4, 29);
+            tabPage3.Name = "tabPage3";
+            tabPage3.Padding = new Padding(3);
+            tabPage3.Size = new Size(929, 406);
+            tabPage3.TabIndex = 6;
+            tabPage3.Text = "Distance Angle";
+            tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // distanceView
+            // 
+            distanceView.BorderStyle = BorderStyle.FixedSingle;
+            distanceView.Dock = DockStyle.Fill;
+            distanceView.Location = new Point(0, 0);
+            distanceView.Name = "distanceView";
+            distanceView.Size = new Size(460, 400);
+            distanceView.TabIndex = 0;
+            // 
+            // splitContainer1
+            // 
+            splitContainer1.Dock = DockStyle.Fill;
+            splitContainer1.Location = new Point(3, 3);
+            splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            splitContainer1.Panel1.Controls.Add(distanceView);
+            // 
+            // splitContainer1.Panel2
+            // 
+            splitContainer1.Panel2.Controls.Add(gestureViewScatter);
+            splitContainer1.Size = new Size(923, 400);
+            splitContainer1.SplitterDistance = 460;
+            splitContainer1.TabIndex = 1;
             // 
             // MainForm
             // 
@@ -330,11 +354,12 @@
             ((System.ComponentModel.ISupportInitialize)rawSignalSplitContainer).EndInit();
             rawSignalSplitContainer.ResumeLayout(false);
             tabPage2.ResumeLayout(false);
-            processedSplitContainer.Panel1.ResumeLayout(false);
-            processedSplitContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)processedSplitContainer).EndInit();
-            processedSplitContainer.ResumeLayout(false);
             gestureTimeTabPage.ResumeLayout(false);
+            tabPage3.ResumeLayout(false);
+            splitContainer1.Panel1.ResumeLayout(false);
+            splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
+            splitContainer1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -359,12 +384,14 @@
         private TabControl tabControl;
         private TabPage tabPage1;
         private TabPage tabPage2;
-        private SplitContainer processedSplitContainer;
         private SplitContainer rawSignalSplitContainer;
         private Views.TimeSignalView timeSignalView;
         private Views.EnergyOverTimeView energyOverTimeView;
         private TabPage gestureTimeTabPage;
         private Views.GestureViewTime gestureViewTime;
         private Views.GestureViewScatter gestureViewScatter;
+        private TabPage tabPage3;
+        private Views.DistanceView distanceView;
+        private SplitContainer splitContainer1;
     }
 }

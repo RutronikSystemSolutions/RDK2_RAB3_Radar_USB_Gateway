@@ -19,6 +19,9 @@
     <Compile Update="Views\DBFView.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Views\DistanceView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Views\DopplerFFTView.cs">
       <SubType>UserControl</SubType>
     </Compile>

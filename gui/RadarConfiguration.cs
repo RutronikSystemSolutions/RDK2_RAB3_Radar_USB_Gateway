@@ -8,9 +8,9 @@ namespace RDK2_Radar_SignalProcessing_GUI
 {
     public class RadarConfiguration
     {
-        public static double START_FREQUENCY = 61020000000;
-        public static double END_FREQUENCY = 61480000000;
-        public static double SAMPLING_RATE = 2352941;
+        public static double START_FREQUENCY = 58000000000;
+        public static double END_FREQUENCY = 63500000000;
+        public static double SAMPLING_RATE = 2000000;
 
         public static int SAMPLES_PER_CHIRP = 32;
         public static int CHIRPS_PER_FRAME = 64;

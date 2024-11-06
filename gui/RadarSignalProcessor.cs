@@ -69,7 +69,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
                 backgroundRemover[i] = new BackgroundRemover((radarConfiguration.SamplesPerChirp / 2) + 1);
                 gocafar[i] = new CFAR(16, 32, 0.05);
                 somethingDetected[i] = false;
-                threshold[i] = 1.5;
+                threshold[i] = 0.1;
             }
         }
 

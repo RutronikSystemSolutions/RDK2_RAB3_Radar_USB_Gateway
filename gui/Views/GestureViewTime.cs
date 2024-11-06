@@ -46,6 +46,8 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             IsZoomEnabled = true,
             Unit = "Magnitude",
             Key = "Amp",
+            Minimum = -Math.PI,
+            Maximum = Math.PI
         };
 
         /// <summary>
@@ -283,22 +285,40 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
                 fftInH.Add(hPhase);
                 fftInV.Add(vPhase);
 
-                if (hLineSeries.Points.Count > 64)
+                //if (hLineSeries.Points.Count > 64)
+                if (hLineSeries.Points.Count > 32)
                 {
-                    hLineSeries.Points.RemoveAt(0);
-                    vLineSeries.Points.RemoveAt(0);
+                    int fftPointCount = 32;
 
-                    fftInH.RemoveAt(0);
-                    fftInV.RemoveAt (0);
+                    if (hLineSeries.Points.Count > 64)
+                    {
+                        fftPointCount = 64;
+                        hLineSeries.Points.RemoveAt(0);
+                        vLineSeries.Points.RemoveAt(0);
+
+                        fftInH.RemoveAt(0);
+                        fftInV.RemoveAt(0);
+                    }
+
+                    int startIndex = 0;
+                    startIndex = fftInH.Count - fftPointCount;
 
                     // Compute FFT
                     // Compute real FFT
                     // Size of spectrum is (SamplesPerChirp / 2) + 1
-                    double[] fftIn = new double[fftInH.Count];
-                    for (int i = 0; i < fftInH.Count; i++)
+                    //double[] fftIn = new double[fftInH.Count];
+                    double[] fftIn = new double[fftPointCount];
+
+                    //for (int i = 0; i < fftInH.Count; i++)
+                    for (int i = startIndex; i < (startIndex + fftPointCount); i++)
                     {
-                        fftIn[i] = fftInH[i];
+                        fftIn[i - startIndex] = fftInH[i];
                     }
+
+                    // Compute the average and remove it
+                    double average = ArrayUtils.getAverage(fftIn);
+                    ArrayUtils.offsetInPlace(fftIn, -average);
+
                     System.Numerics.Complex[] spectrum = FftSharp.FFT.ForwardReal(fftIn);
 
                     phaseHLineSeries.Points.Clear();
@@ -307,10 +327,16 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
                         phaseHLineSeries.Points.Add(new DataPoint(i, spectrum[i].Magnitude));
                     }
 
-                    for (int i = 0; i < fftInV.Count; i++)
+                    //for (int i = 0; i < fftInV.Count; i++)
+                    for (int i = startIndex; i < (startIndex + fftPointCount); i++)
                     {
-                        fftIn[i] = fftInV[i];
+                        fftIn[i - startIndex] = fftInV[i];
                     }
+
+                    // Compute the average and remove it
+                    average = ArrayUtils.getAverage(fftIn);
+                    ArrayUtils.offsetInPlace(fftIn, -average);
+
                     spectrum = FftSharp.FFT.ForwardReal(fftIn);
 
                     phaseVLineSeries.Points.Clear();
@@ -334,7 +360,7 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 
             timeIndex += 1;
             plotView.InvalidatePlot(true);
-            fftPlotView.Invalidate(true);
+            fftPlotView.InvalidatePlot(true);
         }
 
     }

@@ -34,6 +34,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
             //gestureView.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
             gestureViewScatter.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
             gestureViewTime.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
+            distanceView.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
         }
 
         private void Rdk2_OnNewConnectionState(object sender, RDK2.ConnectionState state)
