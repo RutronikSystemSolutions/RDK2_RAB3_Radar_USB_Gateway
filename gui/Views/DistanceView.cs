@@ -59,8 +59,8 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
         };
 
         private LineSeries distanceLineSerieRx1 = new LineSeries();
-        private LineSeries distanceLineSerieRx2 = new LineSeries();
-        private LineSeries distanceLineSerieRx3 = new LineSeries();
+        //private LineSeries distanceLineSerieRx2 = new LineSeries();
+        //private LineSeries distanceLineSerieRx3 = new LineSeries();
 
         public DistanceView()
         {
@@ -84,15 +84,15 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             distanceLineSerieRx1.Title = "RX1";
             distanceLineSerieRx1.YAxisKey = yAxisEnergyOverTime.Key;
 
-            distanceLineSerieRx2.Title = "RX2";
-            distanceLineSerieRx2.YAxisKey = yAxisEnergyOverTime.Key;
+            //distanceLineSerieRx2.Title = "RX2";
+            //distanceLineSerieRx2.YAxisKey = yAxisEnergyOverTime.Key;
 
-            distanceLineSerieRx3.Title = "RX3";
-            distanceLineSerieRx3.YAxisKey = yAxisEnergyOverTime.Key;
+            //distanceLineSerieRx3.Title = "RX3";
+            //distanceLineSerieRx3.YAxisKey = yAxisEnergyOverTime.Key;
 
             timeModel.Series.Add(distanceLineSerieRx1);
-            timeModel.Series.Add(distanceLineSerieRx2);
-            timeModel.Series.Add(distanceLineSerieRx3);
+            //timeModel.Series.Add(distanceLineSerieRx2);
+            //timeModel.Series.Add(distanceLineSerieRx3);
 
             plotView.Model = timeModel;
             plotView.InvalidatePlot(true);
@@ -152,34 +152,34 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
                 distanceLineSerieRx1.Points.Add(new DataPoint(index, double.NaN));
             }
 
-            getMaxAmplitudeRange(dopplerFFTMatrixRx2, out maxRange, out maxMag);
-            if (maxMag > threshold)
-            {
-                distanceLineSerieRx2.Points.Add(new DataPoint(index, indexToRange(maxRange)));
-            }
-            else
-            {
-                distanceLineSerieRx2.Points.Add(new DataPoint(index, double.NaN));
-            }
+            //getMaxAmplitudeRange(dopplerFFTMatrixRx2, out maxRange, out maxMag);
+            //if (maxMag > threshold)
+            //{
+            //    distanceLineSerieRx2.Points.Add(new DataPoint(index, indexToRange(maxRange)));
+            //}
+            //else
+            //{
+            //    distanceLineSerieRx2.Points.Add(new DataPoint(index, double.NaN));
+            //}
 
-            getMaxAmplitudeRange(dopplerFFTMatrixRx3, out maxRange, out maxMag);
-            if (maxMag > threshold)
-            {
-                distanceLineSerieRx3.Points.Add(new DataPoint(index, indexToRange(maxRange)));
-            }
-            else
-            {
-                distanceLineSerieRx3.Points.Add(new DataPoint(index, double.NaN));
-            }
+            //getMaxAmplitudeRange(dopplerFFTMatrixRx3, out maxRange, out maxMag);
+            //if (maxMag > threshold)
+            //{
+            //    distanceLineSerieRx3.Points.Add(new DataPoint(index, indexToRange(maxRange)));
+            //}
+            //else
+            //{
+            //    distanceLineSerieRx3.Points.Add(new DataPoint(index, double.NaN));
+            //}
 
 
             index += 1;
 
-            if (distanceLineSerieRx1.Points.Count > 500)
+            if (distanceLineSerieRx1.Points.Count > 600)
             {
                 distanceLineSerieRx1.Points.RemoveAt(0);
-                distanceLineSerieRx2.Points.RemoveAt(0);
-                distanceLineSerieRx3.Points.RemoveAt(0);
+                //distanceLineSerieRx2.Points.RemoveAt(0);
+                //distanceLineSerieRx3.Points.RemoveAt(0);
             }
 
             plotView.InvalidatePlot(true);

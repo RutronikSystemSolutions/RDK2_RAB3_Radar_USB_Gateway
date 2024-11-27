@@ -37,6 +37,9 @@
     <Compile Update="Views\GestureViewTime.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Views\LogView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Views\RangeFFTView.cs">
       <SubType>UserControl</SubType>
     </Compile>

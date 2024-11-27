@@ -43,18 +43,21 @@
             rangefftView = new Views.RangeFFTView();
             statusStrip1 = new StatusStrip();
             dataLoggerToolStripStatusLabel = new ToolStripStatusLabel();
+            handDetectedToolStripStatusLabel = new ToolStripStatusLabel();
             tabControl = new TabControl();
             tabPage1 = new TabPage();
             rawSignalSplitContainer = new SplitContainer();
             timeSignalView = new Views.TimeSignalView();
             tabPage2 = new TabPage();
             energyOverTimeView = new Views.EnergyOverTimeView();
-            gestureViewScatter = new Views.GestureViewScatter();
             gestureTimeTabPage = new TabPage();
             gestureViewTime = new Views.GestureViewTime();
             tabPage3 = new TabPage();
-            distanceView = new Views.DistanceView();
             splitContainer1 = new SplitContainer();
+            distanceView = new Views.DistanceView();
+            gestureViewScatter = new Views.GestureViewScatter();
+            mainSplitContainer = new SplitContainer();
+            logView = new Views.LogView();
             menuStrip.SuspendLayout();
             statusStrip1.SuspendLayout();
             tabControl.SuspendLayout();
@@ -70,6 +73,10 @@
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)mainSplitContainer).BeginInit();
+            mainSplitContainer.Panel1.SuspendLayout();
+            mainSplitContainer.Panel2.SuspendLayout();
+            mainSplitContainer.SuspendLayout();
             SuspendLayout();
             // 
             // comPortLabel
@@ -172,13 +179,13 @@
             rangefftView.Dock = DockStyle.Fill;
             rangefftView.Location = new Point(0, 0);
             rangefftView.Name = "rangefftView";
-            rangefftView.Size = new Size(463, 400);
+            rangefftView.Size = new Size(303, 400);
             rangefftView.TabIndex = 10;
             // 
             // statusStrip1
             // 
             statusStrip1.ImageScalingSize = new Size(20, 20);
-            statusStrip1.Items.AddRange(new ToolStripItem[] { dataLoggerToolStripStatusLabel });
+            statusStrip1.Items.AddRange(new ToolStripItem[] { dataLoggerToolStripStatusLabel, handDetectedToolStripStatusLabel });
             statusStrip1.Location = new Point(0, 507);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(961, 26);
@@ -191,17 +198,24 @@
             dataLoggerToolStripStatusLabel.Size = new Size(148, 20);
             dataLoggerToolStripStatusLabel.Text = "Data logger stopped";
             // 
+            // handDetectedToolStripStatusLabel
+            // 
+            handDetectedToolStripStatusLabel.ForeColor = Color.Green;
+            handDetectedToolStripStatusLabel.Name = "handDetectedToolStripStatusLabel";
+            handDetectedToolStripStatusLabel.Size = new Size(15, 20);
+            handDetectedToolStripStatusLabel.Text = "-";
+            // 
             // tabControl
             // 
-            tabControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tabControl.Controls.Add(tabPage1);
             tabControl.Controls.Add(tabPage2);
             tabControl.Controls.Add(gestureTimeTabPage);
             tabControl.Controls.Add(tabPage3);
-            tabControl.Location = new Point(12, 65);
+            tabControl.Dock = DockStyle.Fill;
+            tabControl.Location = new Point(0, 0);
             tabControl.Name = "tabControl";
             tabControl.SelectedIndex = 0;
-            tabControl.Size = new Size(937, 439);
+            tabControl.Size = new Size(619, 439);
             tabControl.TabIndex = 13;
             // 
             // tabPage1
@@ -210,7 +224,7 @@
             tabPage1.Location = new Point(4, 29);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(929, 406);
+            tabPage1.Size = new Size(611, 406);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Raw signals";
             tabPage1.UseVisualStyleBackColor = true;
@@ -228,8 +242,8 @@
             // rawSignalSplitContainer.Panel2
             // 
             rawSignalSplitContainer.Panel2.Controls.Add(rangefftView);
-            rawSignalSplitContainer.Size = new Size(923, 400);
-            rawSignalSplitContainer.SplitterDistance = 456;
+            rawSignalSplitContainer.Size = new Size(605, 400);
+            rawSignalSplitContainer.SplitterDistance = 298;
             rawSignalSplitContainer.TabIndex = 0;
             // 
             // timeSignalView
@@ -238,7 +252,7 @@
             timeSignalView.Dock = DockStyle.Fill;
             timeSignalView.Location = new Point(0, 0);
             timeSignalView.Name = "timeSignalView";
-            timeSignalView.Size = new Size(456, 400);
+            timeSignalView.Size = new Size(298, 400);
             timeSignalView.TabIndex = 14;
             // 
             // tabPage2
@@ -247,7 +261,7 @@
             tabPage2.Location = new Point(4, 29);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(929, 406);
+            tabPage2.Size = new Size(611, 406);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Processed";
             tabPage2.UseVisualStyleBackColor = true;
@@ -258,17 +272,8 @@
             energyOverTimeView.Dock = DockStyle.Fill;
             energyOverTimeView.Location = new Point(3, 3);
             energyOverTimeView.Name = "energyOverTimeView";
-            energyOverTimeView.Size = new Size(923, 400);
+            energyOverTimeView.Size = new Size(605, 400);
             energyOverTimeView.TabIndex = 14;
-            // 
-            // gestureViewScatter
-            // 
-            gestureViewScatter.BorderStyle = BorderStyle.FixedSingle;
-            gestureViewScatter.Dock = DockStyle.Fill;
-            gestureViewScatter.Location = new Point(0, 0);
-            gestureViewScatter.Name = "gestureViewScatter";
-            gestureViewScatter.Size = new Size(459, 400);
-            gestureViewScatter.TabIndex = 0;
             // 
             // gestureTimeTabPage
             // 
@@ -276,7 +281,7 @@
             gestureTimeTabPage.Location = new Point(4, 29);
             gestureTimeTabPage.Name = "gestureTimeTabPage";
             gestureTimeTabPage.Padding = new Padding(3);
-            gestureTimeTabPage.Size = new Size(929, 406);
+            gestureTimeTabPage.Size = new Size(611, 406);
             gestureTimeTabPage.TabIndex = 5;
             gestureTimeTabPage.Text = "Gesture Time";
             gestureTimeTabPage.UseVisualStyleBackColor = true;
@@ -287,7 +292,7 @@
             gestureViewTime.Dock = DockStyle.Fill;
             gestureViewTime.Location = new Point(3, 3);
             gestureViewTime.Name = "gestureViewTime";
-            gestureViewTime.Size = new Size(923, 400);
+            gestureViewTime.Size = new Size(605, 400);
             gestureViewTime.TabIndex = 0;
             // 
             // tabPage3
@@ -296,19 +301,10 @@
             tabPage3.Location = new Point(4, 29);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(929, 406);
+            tabPage3.Size = new Size(611, 406);
             tabPage3.TabIndex = 6;
             tabPage3.Text = "Distance Angle";
             tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // distanceView
-            // 
-            distanceView.BorderStyle = BorderStyle.FixedSingle;
-            distanceView.Dock = DockStyle.Fill;
-            distanceView.Location = new Point(0, 0);
-            distanceView.Name = "distanceView";
-            distanceView.Size = new Size(460, 400);
-            distanceView.TabIndex = 0;
             // 
             // splitContainer1
             // 
@@ -323,16 +319,59 @@
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(gestureViewScatter);
-            splitContainer1.Size = new Size(923, 400);
-            splitContainer1.SplitterDistance = 460;
+            splitContainer1.Size = new Size(605, 400);
+            splitContainer1.SplitterDistance = 301;
             splitContainer1.TabIndex = 1;
+            // 
+            // distanceView
+            // 
+            distanceView.BorderStyle = BorderStyle.FixedSingle;
+            distanceView.Dock = DockStyle.Fill;
+            distanceView.Location = new Point(0, 0);
+            distanceView.Name = "distanceView";
+            distanceView.Size = new Size(301, 400);
+            distanceView.TabIndex = 0;
+            // 
+            // gestureViewScatter
+            // 
+            gestureViewScatter.BorderStyle = BorderStyle.FixedSingle;
+            gestureViewScatter.Dock = DockStyle.Fill;
+            gestureViewScatter.Location = new Point(0, 0);
+            gestureViewScatter.Name = "gestureViewScatter";
+            gestureViewScatter.Size = new Size(300, 400);
+            gestureViewScatter.TabIndex = 0;
+            // 
+            // mainSplitContainer
+            // 
+            mainSplitContainer.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            mainSplitContainer.Location = new Point(12, 65);
+            mainSplitContainer.Name = "mainSplitContainer";
+            // 
+            // mainSplitContainer.Panel1
+            // 
+            mainSplitContainer.Panel1.Controls.Add(tabControl);
+            // 
+            // mainSplitContainer.Panel2
+            // 
+            mainSplitContainer.Panel2.Controls.Add(logView);
+            mainSplitContainer.Size = new Size(937, 439);
+            mainSplitContainer.SplitterDistance = 619;
+            mainSplitContainer.TabIndex = 14;
+            // 
+            // logView
+            // 
+            logView.Dock = DockStyle.Fill;
+            logView.Location = new Point(0, 0);
+            logView.Name = "logView";
+            logView.Size = new Size(314, 439);
+            logView.TabIndex = 0;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(961, 533);
-            Controls.Add(tabControl);
+            Controls.Add(mainSplitContainer);
             Controls.Add(statusStrip1);
             Controls.Add(rdk2ConnectionStateTextBox);
             Controls.Add(connectButton);
@@ -360,6 +399,10 @@
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
+            mainSplitContainer.Panel1.ResumeLayout(false);
+            mainSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)mainSplitContainer).EndInit();
+            mainSplitContainer.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -393,5 +436,8 @@
         private TabPage tabPage3;
         private Views.DistanceView distanceView;
         private SplitContainer splitContainer1;
+        private SplitContainer mainSplitContainer;
+        private Views.LogView logView;
+        private ToolStripStatusLabel handDetectedToolStripStatusLabel;
     }
 }

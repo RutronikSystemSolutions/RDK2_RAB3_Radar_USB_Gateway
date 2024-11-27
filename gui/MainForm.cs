@@ -13,6 +13,9 @@ namespace RDK2_Radar_SignalProcessing_GUI
         /// </summary>
         private RadarSignalProcessor radarSignalProcessor = new RadarSignalProcessor(new RadarConfiguration());
 
+        private GestureDetector gestureDetector = new GestureDetector();
+        private ClickDetector clickDetector = new ClickDetector();
+
         private RDK2 rdk2 = new RDK2();
 
         public MainForm()
@@ -26,6 +29,27 @@ namespace RDK2_Radar_SignalProcessing_GUI
             radarSignalProcessor.OnNewFrameSpectrum += RadarSignalProcessor_OnNewFrameSpectrum;
             radarSignalProcessor.OnNewEnergyOverTime += RadarSignalProcessor_OnNewEnergyOverTime;
             radarSignalProcessor.OnNewDopplerFFTMatrix3 += RadarSignalProcessor_OnNewDopplerFFTMatrix3;
+
+            clickDetector.OnNewClick += ClickDetector_OnNewClick;
+            clickDetector.OnHandDetected += ClickDetector_OnHandDetected;
+        }
+
+        private void ClickDetector_OnHandDetected(object sender, bool status)
+        {
+            if (status)
+            {
+                handDetectedToolStripStatusLabel.Text = "Hand detected";
+            }
+            else
+            {
+                handDetectedToolStripStatusLabel.Text = string.Empty;
+            }
+        }
+
+        private void ClickDetector_OnNewClick(object sender)
+        {
+            logView.AddLog("On Click");
+            System.Media.SystemSounds.Asterisk.Play();
         }
 
         private void RadarSignalProcessor_OnNewDopplerFFTMatrix3(object sender, System.Numerics.Complex[,] dopplerFFTMatrixRx1, System.Numerics.Complex[,] dopplerFFTMatrixRx2, System.Numerics.Complex[,] dopplerFFTMatrixRx3)
@@ -35,6 +59,9 @@ namespace RDK2_Radar_SignalProcessing_GUI
             gestureViewScatter.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
             gestureViewTime.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
             distanceView.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
+
+            //gestureDetector.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
+            clickDetector.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
         }
 
         private void Rdk2_OnNewConnectionState(object sender, RDK2.ConnectionState state)
