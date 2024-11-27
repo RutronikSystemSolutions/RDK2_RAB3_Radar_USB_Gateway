@@ -10,7 +10,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RDK2_Radar_SignalProcessing_GUI.Views
 {
@@ -59,7 +58,9 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             Maximum = 1
         };
 
-        private LineSeries distanceLineSerie = new LineSeries();
+        private LineSeries distanceLineSerieRx1 = new LineSeries();
+        private LineSeries distanceLineSerieRx2 = new LineSeries();
+        private LineSeries distanceLineSerieRx3 = new LineSeries();
 
         public DistanceView()
         {
@@ -80,10 +81,18 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             timeModel.Axes.Add(yAxisEnergyOverTime);
 
             // Add series
-            distanceLineSerie.Title = "Distance";
-            distanceLineSerie.YAxisKey = yAxisEnergyOverTime.Key;
+            distanceLineSerieRx1.Title = "RX1";
+            distanceLineSerieRx1.YAxisKey = yAxisEnergyOverTime.Key;
 
-            timeModel.Series.Add(distanceLineSerie);
+            distanceLineSerieRx2.Title = "RX2";
+            distanceLineSerieRx2.YAxisKey = yAxisEnergyOverTime.Key;
+
+            distanceLineSerieRx3.Title = "RX3";
+            distanceLineSerieRx3.YAxisKey = yAxisEnergyOverTime.Key;
+
+            timeModel.Series.Add(distanceLineSerieRx1);
+            timeModel.Series.Add(distanceLineSerieRx2);
+            timeModel.Series.Add(distanceLineSerieRx3);
 
             plotView.Model = timeModel;
             plotView.InvalidatePlot(true);
@@ -103,6 +112,26 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             return rangeMeters;
         }
 
+        private void getMaxAmplitudeRange(System.Numerics.Complex[,] dopplerFFTMatrix, out int maxRange, out double maxMag)
+        {
+            maxMag = 0;
+            maxRange = 0;
+
+            for (int i = 0; i < dopplerFFTMatrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < dopplerFFTMatrix.GetLength(1); j++)
+                {
+                    double magnitude = dopplerFFTMatrix[i, j].Magnitude;
+                    if (magnitude > maxMag)
+                    {
+                        maxMag = magnitude;
+                        maxRange = i;
+                    }
+                }
+            }
+
+        }
+
         public void UpdateData(System.Numerics.Complex[,] dopplerFFTMatrixRx1, System.Numerics.Complex[,] dopplerFFTMatrixRx2, System.Numerics.Complex[,] dopplerFFTMatrixRx3)
         {
             // Should never happen but let be sure of it
@@ -113,40 +142,44 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             double maxMag = 0;
             int maxRange = 0;
 
-            // Check for all values above the threshold
-            for (int i = 0; i < dopplerFFTMatrixRx1.GetLength(0); i++)
-            {
-                for (int j = 0; j < dopplerFFTMatrixRx1.GetLength(1); j++)
-                {
-                    double magnitude = dopplerFFTMatrixRx1[i, j].Magnitude;
-                    if (magnitude > threshold)
-                    {
-                        double rx1 = dopplerFFTMatrixRx1[i, j].Phase;
-                        double rx2 = dopplerFFTMatrixRx2[i, j].Phase;
-                        double rx3 = dopplerFFTMatrixRx3[i, j].Phase;
-
-                        if (magnitude > maxMag)
-                        {
-                            maxMag = magnitude;
-                            maxRange = i;
-                        }
-                    }
-                }
-            }
-
+            getMaxAmplitudeRange(dopplerFFTMatrixRx1, out maxRange, out maxMag);
             if (maxMag > threshold)
             {
-                distanceLineSerie.Points.Add(new DataPoint(index, indexToRange(maxRange)));
+                distanceLineSerieRx1.Points.Add(new DataPoint(index, indexToRange(maxRange)));
             }
             else
             {
-                distanceLineSerie.Points.Add(new DataPoint(index, double.NaN));
+                distanceLineSerieRx1.Points.Add(new DataPoint(index, double.NaN));
             }
+
+            getMaxAmplitudeRange(dopplerFFTMatrixRx2, out maxRange, out maxMag);
+            if (maxMag > threshold)
+            {
+                distanceLineSerieRx2.Points.Add(new DataPoint(index, indexToRange(maxRange)));
+            }
+            else
+            {
+                distanceLineSerieRx2.Points.Add(new DataPoint(index, double.NaN));
+            }
+
+            getMaxAmplitudeRange(dopplerFFTMatrixRx3, out maxRange, out maxMag);
+            if (maxMag > threshold)
+            {
+                distanceLineSerieRx3.Points.Add(new DataPoint(index, indexToRange(maxRange)));
+            }
+            else
+            {
+                distanceLineSerieRx3.Points.Add(new DataPoint(index, double.NaN));
+            }
+
+
             index += 1;
 
-            if (distanceLineSerie.Points.Count > 500)
+            if (distanceLineSerieRx1.Points.Count > 500)
             {
-                distanceLineSerie.Points.RemoveAt(0);
+                distanceLineSerieRx1.Points.RemoveAt(0);
+                distanceLineSerieRx2.Points.RemoveAt(0);
+                distanceLineSerieRx3.Points.RemoveAt(0);
             }
 
             plotView.InvalidatePlot(true);
