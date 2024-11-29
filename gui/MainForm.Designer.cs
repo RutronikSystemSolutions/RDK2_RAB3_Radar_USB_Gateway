@@ -58,6 +58,7 @@
             gestureViewScatter = new Views.GestureViewScatter();
             mainSplitContainer = new SplitContainer();
             logView = new Views.LogView();
+            playbackToolStripMenuItem = new ToolStripMenuItem();
             menuStrip.SuspendLayout();
             statusStrip1.SuspendLayout();
             tabControl.SuspendLayout();
@@ -146,7 +147,7 @@
             // 
             // dataLoggerToolStripMenuItem
             // 
-            dataLoggerToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { startToolStripMenuItem, stopToolStripMenuItem });
+            dataLoggerToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { startToolStripMenuItem, stopToolStripMenuItem, playbackToolStripMenuItem });
             dataLoggerToolStripMenuItem.Name = "dataLoggerToolStripMenuItem";
             dataLoggerToolStripMenuItem.Size = new Size(103, 24);
             dataLoggerToolStripMenuItem.Text = "Data logger";
@@ -154,15 +155,17 @@
             // startToolStripMenuItem
             // 
             startToolStripMenuItem.Name = "startToolStripMenuItem";
-            startToolStripMenuItem.Size = new Size(123, 26);
+            startToolStripMenuItem.Size = new Size(224, 26);
             startToolStripMenuItem.Text = "Start";
+            startToolStripMenuItem.Click += startToolStripMenuItem_Click;
             // 
             // stopToolStripMenuItem
             // 
             stopToolStripMenuItem.Enabled = false;
             stopToolStripMenuItem.Name = "stopToolStripMenuItem";
-            stopToolStripMenuItem.Size = new Size(123, 26);
+            stopToolStripMenuItem.Size = new Size(224, 26);
             stopToolStripMenuItem.Text = "Stop";
+            stopToolStripMenuItem.Click += stopToolStripMenuItem_Click;
             // 
             // rdk2ConnectionStateTextBox
             // 
@@ -366,6 +369,13 @@
             logView.Size = new Size(314, 439);
             logView.TabIndex = 0;
             // 
+            // playbackToolStripMenuItem
+            // 
+            playbackToolStripMenuItem.Name = "playbackToolStripMenuItem";
+            playbackToolStripMenuItem.Size = new Size(224, 26);
+            playbackToolStripMenuItem.Text = "Playback";
+            playbackToolStripMenuItem.Click += playbackToolStripMenuItem_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -439,5 +449,6 @@
         private SplitContainer mainSplitContainer;
         private Views.LogView logView;
         private ToolStripStatusLabel handDetectedToolStripStatusLabel;
+        private ToolStripMenuItem playbackToolStripMenuItem;
     }
 }

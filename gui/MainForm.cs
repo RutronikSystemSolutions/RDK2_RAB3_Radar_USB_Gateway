@@ -18,6 +18,10 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
         private RDK2 rdk2 = new RDK2();
 
+        private DataLogger logger = new DataLogger();
+
+        private PlaybackReader playbackReader = new PlaybackReader();
+
         public MainForm()
         {
             InitializeComponent();
@@ -32,6 +36,26 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
             clickDetector.OnNewClick += ClickDetector_OnNewClick;
             clickDetector.OnHandDetected += ClickDetector_OnHandDetected;
+
+            logger.OnNewLoggerState += Logger_OnNewLoggerState;
+
+            playbackReader.OnNewFrameEvent += Rdk2_OnNewFrame;
+        }
+
+        private void Logger_OnNewLoggerState(object sender, bool startedFlag)
+        {
+            if (startedFlag)
+            {
+                dataLoggerToolStripStatusLabel.Text = "Logger started";
+                startToolStripMenuItem.Enabled = false;
+                stopToolStripMenuItem.Enabled = true;
+            }
+            else
+            {
+                dataLoggerToolStripStatusLabel.Text = "Logger stopped";
+                startToolStripMenuItem.Enabled = true;
+                stopToolStripMenuItem.Enabled = false;
+            }
         }
 
         private void ClickDetector_OnHandDetected(object sender, bool status)
@@ -80,7 +104,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
                     connectButton.Enabled = true;
                     break;
             }
-        }        
+        }
 
         private void RadarSignalProcessor_OnNewEnergyOverTime(object sender, double energy, double threshold, int antennaIndex)
         {
@@ -101,6 +125,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
         private void Rdk2_OnNewFrame(object sender, ushort[] frame)
         {
             radarSignalProcessor.feedDopplerFFT(frame);
+            logger.Log(frame);
         }
 
         /// <summary>
@@ -155,6 +180,33 @@ namespace RDK2_Radar_SignalProcessing_GUI
         {
             TargetDetectionConfigurationForm form = new TargetDetectionConfigurationForm(radarSignalProcessor);
             form.ShowDialog();
+        }
+
+        private void startToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.Filter = "CSV Files | *.csv";
+            dialog.DefaultExt = "csv";
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                logger.Start(dialog.FileName);
+            }
+        }
+
+        private void stopToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            logger.Stop();
+        }
+
+        private void playbackToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "CSV Files | *.csv";
+            dialog.DefaultExt = "csv";
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                playbackReader.Start(dialog.FileName);
+            }
         }
     }
 }

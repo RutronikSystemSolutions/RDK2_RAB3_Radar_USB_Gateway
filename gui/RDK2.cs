@@ -118,11 +118,17 @@ namespace RDK2_Radar_SignalProcessing_GUI
             int offset = 0;
             int remaining = bytesPerFrame;
 
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+
             for (; ;)
             {
                 int available = port.BytesToRead;
                 if (available > 0)
                 {
+                    if (remaining == bytesPerFrame)
+                    {
+                        watch.Restart();
+                    }
                     int toRead = (available > remaining) ? remaining: available;
                     port.Read(readBuffer, offset, toRead);
 
@@ -144,6 +150,16 @@ namespace RDK2_Radar_SignalProcessing_GUI
                     offset = 0;
                     remaining = bytesPerFrame;
                 }
+
+                if ((watch.Elapsed.TotalMilliseconds > 500) && (offset != 0))
+                {
+                    // Problem...
+                    System.Diagnostics.Debug.WriteLine("Timeout 500,s");
+                    offset = 0;
+                    remaining = bytesPerFrame;
+                }
+
+                System.Threading.Thread.Sleep(1);
             }
         }
 

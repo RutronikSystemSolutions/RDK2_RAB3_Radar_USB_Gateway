@@ -55,7 +55,8 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             Unit = "Distance",
             Key = "Amp",
             Minimum = 0,
-            Maximum = 1
+            Maximum = 1,
+            AbsoluteMinimum = 0
         };
 
         private LineSeries distanceLineSerieRx1 = new LineSeries();
@@ -83,6 +84,8 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             // Add series
             distanceLineSerieRx1.Title = "RX1";
             distanceLineSerieRx1.YAxisKey = yAxisEnergyOverTime.Key;
+            distanceLineSerieRx1.LineStyle = LineStyle.None;
+            distanceLineSerieRx1.MarkerType = MarkerType.Circle;
 
             //distanceLineSerieRx2.Title = "RX2";
             //distanceLineSerieRx2.YAxisKey = yAxisEnergyOverTime.Key;
@@ -149,7 +152,10 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             }
             else
             {
-                distanceLineSerieRx1.Points.Add(new DataPoint(index, double.NaN));
+                // In case nothing, add negative point (to continue the "scrolling")
+                // since AbsoluteMinimum is set to 0 it is ok
+                // using double.NaN does not work (do not update the plot)
+                distanceLineSerieRx1.Points.Add(new DataPoint(index, -100));
             }
 
             //getMaxAmplitudeRange(dopplerFFTMatrixRx2, out maxRange, out maxMag);
@@ -175,7 +181,8 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 
             index += 1;
 
-            if (distanceLineSerieRx1.Points.Count > 600)
+            // Keep the last 4 seconds
+            if (distanceLineSerieRx1.Points.Count > (30 * 4))
             {
                 distanceLineSerieRx1.Points.RemoveAt(0);
                 //distanceLineSerieRx2.Points.RemoveAt(0);
