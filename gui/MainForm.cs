@@ -36,10 +36,16 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
             clickDetector.OnNewClick += ClickDetector_OnNewClick;
             clickDetector.OnHandDetected += ClickDetector_OnHandDetected;
+            clickDetector.OnReadyForNextAction += ClickDetector_OnReadyForNextAction;
 
             logger.OnNewLoggerState += Logger_OnNewLoggerState;
 
             playbackReader.OnNewFrameEvent += Rdk2_OnNewFrame;
+        }
+
+        private void ClickDetector_OnReadyForNextAction(object sender, bool status)
+        {
+            userFeedbackView.SignalReadyForNextAction(status);
         }
 
         private void Logger_OnNewLoggerState(object sender, bool startedFlag)
@@ -70,10 +76,12 @@ namespace RDK2_Radar_SignalProcessing_GUI
             }
         }
 
-        private void ClickDetector_OnNewClick(object sender)
+        private void ClickDetector_OnNewClick(object sender, int direction)
         {
-            logView.AddLog("On Click");
+            logView.AddLog("On Click " + direction);
             System.Media.SystemSounds.Asterisk.Play();
+
+            userFeedbackView.SignalClick(direction);
         }
 
         private void RadarSignalProcessor_OnNewDopplerFFTMatrix3(object sender, System.Numerics.Complex[,] dopplerFFTMatrixRx1, System.Numerics.Complex[,] dopplerFFTMatrixRx2, System.Numerics.Complex[,] dopplerFFTMatrixRx3)

@@ -67,6 +67,8 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
         {
             InitializeComponent();
             InitPlot();
+            
+            // System.Diagnostics.Debug.WriteLine(string.Format("conversion 1 tick = {0}m", indexToRange(1)));
         }
 
         private void InitPlot()

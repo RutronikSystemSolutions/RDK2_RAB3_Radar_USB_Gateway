@@ -29,31 +29,13 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            selectedNumber = new Label();
-            statusLabel = new Label();
             guiUpdateTime = new System.Windows.Forms.Timer(components);
             verticalProgressBar = new UIControls.VerticalProgressBar();
+            leftMovePanel = new Panel();
+            clickPanel = new Panel();
+            rightMovePanel = new Panel();
+            readyForNewMovePanel = new Panel();
             SuspendLayout();
-            // 
-            // selectedNumber
-            // 
-            selectedNumber.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            selectedNumber.Font = new Font("Segoe UI", 16.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            selectedNumber.Location = new Point(3, 0);
-            selectedNumber.Name = "selectedNumber";
-            selectedNumber.Size = new Size(331, 54);
-            selectedNumber.TabIndex = 1;
-            selectedNumber.Text = "0";
-            selectedNumber.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // statusLabel
-            // 
-            statusLabel.AutoSize = true;
-            statusLabel.Location = new Point(3, 54);
-            statusLabel.Name = "statusLabel";
-            statusLabel.Size = new Size(52, 20);
-            statusLabel.TabIndex = 2;
-            statusLabel.Text = "Status:";
             // 
             // guiUpdateTime
             // 
@@ -63,29 +45,62 @@
             // 
             verticalProgressBar.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
             verticalProgressBar.BorderStyle = BorderStyle.FixedSingle;
-            verticalProgressBar.Location = new Point(234, 3);
+            verticalProgressBar.Location = new Point(256, 3);
             verticalProgressBar.Name = "verticalProgressBar";
-            verticalProgressBar.Size = new Size(100, 217);
+            verticalProgressBar.Size = new Size(78, 217);
             verticalProgressBar.TabIndex = 3;
+            // 
+            // leftMovePanel
+            // 
+            leftMovePanel.BorderStyle = BorderStyle.FixedSingle;
+            leftMovePanel.Location = new Point(31, 91);
+            leftMovePanel.Name = "leftMovePanel";
+            leftMovePanel.Size = new Size(57, 50);
+            leftMovePanel.TabIndex = 5;
+            // 
+            // clickPanel
+            // 
+            clickPanel.BorderStyle = BorderStyle.FixedSingle;
+            clickPanel.Location = new Point(94, 91);
+            clickPanel.Name = "clickPanel";
+            clickPanel.Size = new Size(57, 50);
+            clickPanel.TabIndex = 6;
+            // 
+            // rightMovePanel
+            // 
+            rightMovePanel.BorderStyle = BorderStyle.FixedSingle;
+            rightMovePanel.Location = new Point(157, 91);
+            rightMovePanel.Name = "rightMovePanel";
+            rightMovePanel.Size = new Size(57, 50);
+            rightMovePanel.TabIndex = 6;
+            // 
+            // readyForNewMovePanel
+            // 
+            readyForNewMovePanel.Location = new Point(31, 59);
+            readyForNewMovePanel.Name = "readyForNewMovePanel";
+            readyForNewMovePanel.Size = new Size(183, 26);
+            readyForNewMovePanel.TabIndex = 7;
             // 
             // UserFeedbackView
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(readyForNewMovePanel);
+            Controls.Add(rightMovePanel);
+            Controls.Add(clickPanel);
+            Controls.Add(leftMovePanel);
             Controls.Add(verticalProgressBar);
-            Controls.Add(statusLabel);
-            Controls.Add(selectedNumber);
             Name = "UserFeedbackView";
             Size = new Size(337, 223);
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
-
-        private Label selectedNumber;
-        private Label statusLabel;
         private System.Windows.Forms.Timer guiUpdateTime;
         private UIControls.VerticalProgressBar verticalProgressBar;
+        private Panel leftMovePanel;
+        private Panel clickPanel;
+        private Panel rightMovePanel;
+        private Panel readyForNewMovePanel;
     }
 }

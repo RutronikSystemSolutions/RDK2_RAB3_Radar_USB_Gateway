@@ -22,6 +22,13 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
         private object sync = new object();
         private int lastMaxRange = NONE;
 
+        private int click = 0;
+        private int leftMove = 0;
+        private int rightMove = 0;
+        private int readyForNew = 0;
+
+        private const int ACTION_RESET = 5;
+
         public UserFeedbackView()
         {
             InitializeComponent();
@@ -47,6 +54,27 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
                 }
             }
 
+        }
+
+        public void SignalClick(int direction)
+        {
+            lock(sync)
+            {
+                if (direction == ClickDetector.DIRECTION_NONE)
+                    click = ACTION_RESET;
+                else if (direction == ClickDetector.DIRECTION_LEFT)
+                    leftMove = ACTION_RESET;
+                else if (direction == ClickDetector.DIRECTION_RIGHT)
+                    rightMove = ACTION_RESET;
+            }
+        }
+
+        public void SignalReadyForNextAction(bool status)
+        {
+            if (status)
+                readyForNewMovePanel.BackColor = Color.LightGreen;
+            else
+                readyForNewMovePanel.BackColor = Color.LightGray;
         }
 
         public void UpdateData(System.Numerics.Complex[,] dopplerFFTMatrixRx1, System.Numerics.Complex[,] dopplerFFTMatrixRx2, System.Numerics.Complex[,] dopplerFFTMatrixRx3)
@@ -79,12 +107,21 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
         private void guiUpdateTime_Tick(object sender, EventArgs e)
         {
             int maxRange = NONE;
+            int clickDo = 0;
+            int leftMoveDo = 0;
+            int rightMoveDo = 0;
+
             lock(sync)
             {
                 maxRange = lastMaxRange;
-            }
+                clickDo = click;
+                leftMoveDo = leftMove;
+                rightMoveDo = rightMove;
 
-            selectedNumber.Text = maxRange.ToString();
+                if (click >= 0) click--;
+                if (leftMove >= 0) leftMove--;
+                if (rightMove >= 0) rightMove--;
+            }
 
             if (maxRange == NONE)
             {
@@ -93,6 +130,33 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             else
             {
                 verticalProgressBar.SetValue(maxRange);
+            }
+
+            if (clickDo == ACTION_RESET)
+            {
+                clickPanel.BackColor = Color.Magenta;
+            }
+            else if (clickDo == 0)
+            {
+                clickPanel.BackColor = Color.LightGray;
+            }
+
+            if (leftMoveDo == ACTION_RESET)
+            {
+                leftMovePanel.BackColor = Color.Magenta;
+            }
+            else if (leftMoveDo == 0)
+            {
+                leftMovePanel.BackColor = Color.LightGray;
+            }
+
+            if (rightMoveDo == ACTION_RESET)
+            {
+                rightMovePanel.BackColor = Color.Magenta;
+            }
+            else if (rightMoveDo == 0)
+            {
+                rightMovePanel.BackColor = Color.LightGray;
             }
         }
     }

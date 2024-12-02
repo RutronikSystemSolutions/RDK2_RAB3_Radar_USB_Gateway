@@ -15,6 +15,8 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 {
     public partial class GestureViewTime : UserControl
     {
+        private double threshold = 0.1;
+
         /// <summary>
         /// X Axis
         /// </summary>
@@ -90,6 +92,12 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
         private LineSeries phaseHLineSeries = new LineSeries();
         private LineSeries phaseVLineSeries = new LineSeries();
 
+
+        private LineSeries rotationDetectedLineSeries = new LineSeries();
+
+        private LineSeries fftHPhaseLineSeries = new LineSeries();
+        private LineSeries fftVPhaseLineSeries = new LineSeries();
+
         public GestureViewTime()
         {
             InitializeComponent();
@@ -116,8 +124,17 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             vLineSeries.Title = "Antenna 1";
             vLineSeries.YAxisKey = yAxisTimeDomain.Key;
 
+            rotationDetectedLineSeries.Title = "Rotation";
+            rotationDetectedLineSeries.YAxisKey = yAxisTimeDomain.Key;
+
+            fftHPhaseLineSeries.Title = "H";
+            fftVPhaseLineSeries.Title = "V";
+
             timeModel.Series.Add(hLineSeries);
             timeModel.Series.Add(vLineSeries);
+            //timeModel.Series.Add(rotationDetectedLineSeries);
+            //timeModel.Series.Add(fftHPhaseLineSeries);
+            //timeModel.Series.Add(fftVPhaseLineSeries);
 
             plotView.Model = timeModel;
             plotView.InvalidatePlot(true);
@@ -210,6 +227,13 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
         private double lastH = double.NaN;
         private double lastV = double.NaN;
 
+        /// <summary>
+        /// Get difference between two angles
+        /// Result is always between -pi and pi
+        /// </summary>
+        /// <param name="a1"></param>
+        /// <param name="a2"></param>
+        /// <returns></returns>
         private double getAngleDiff(double a1, double a2)
         {
             double sign = -1;
@@ -228,50 +252,165 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 
         private List<double> fftInH = new List<double>();
         private List<double> fftInV = new List<double>();
+        private int belowThresholdCount = 0;
 
+        /// <summary>
+        /// Check if a rotation has been detected or not
+        /// </summary>
+        /// <param name="spectrumHorizontal"></param>
+        /// <param name="spectrumVertical"></param>
+        /// <returns>0: no rotation, -1: anti-clockwise, 1: clockwise</returns>
+        private double DetectRotation(System.Numerics.Complex[] spectrumHorizontal,
+            System.Numerics.Complex[] spectrumVertical,
+            double[] timeH, double[] timeV)
+        {
+            // Only check for the first 5 values
+            double biggestMagnitudeH = 0;
+            int hIndex = 0;
+            double biggestMagnitudeV = 0;
+            int vIndex = 0;
+
+            for(int i = 0; i < 5; ++i)
+            {
+                if (spectrumHorizontal[i].Magnitude > biggestMagnitudeH)
+                {
+                    biggestMagnitudeH = spectrumHorizontal[i].Magnitude;
+                    hIndex = i;
+                }
+
+                if (spectrumVertical[i].Magnitude > biggestMagnitudeV)
+                {
+                    biggestMagnitudeV = spectrumVertical[i].Magnitude;
+                    vIndex = i;
+                }
+            }
+
+            // Same biggest index?
+            int diffIndex = vIndex - hIndex;
+            if (diffIndex < 0) diffIndex = -diffIndex;
+
+            if (diffIndex <= 2)
+            {
+                // Check the ratio
+                double biggest = (biggestMagnitudeH > biggestMagnitudeV)? biggestMagnitudeH : biggestMagnitudeV;
+                double smallest = (biggestMagnitudeH < biggestMagnitudeV) ? biggestMagnitudeH : biggestMagnitudeV;
+
+                double ratio = smallest / biggest;
+
+                // Both bigger than threshold
+                if ((smallest > 0.3) && (ratio > 0.6))
+                {
+                    double biggestTimeH = 0;
+                    double biggestTimeV = 0;
+                    int biggestTimeIndexH = 0;
+                    int biggestTimeIndexV = 0;
+                    for (int j = 0; j < timeH.Length; ++j)
+                    {
+                        if (timeH[j] > biggestTimeH)
+                        {
+                            biggestTimeH = timeH[j];
+                            biggestTimeIndexH = j;
+                        }
+
+                        if (timeV[j] > biggestTimeV)
+                        {
+                            biggestTimeV = timeV[j];
+                            biggestTimeIndexV = j;
+                        }
+                    }
+
+                    // Between -16 and 16
+                    int diff = biggestTimeIndexH - biggestTimeIndexV;
+                    if (diff > 16)
+                    {
+                        diff = diff - 32;
+                    }
+                    if (diff < -16)
+                    {
+                        diff = diff + 32;
+                    }
+
+                    return ((double)diff / 16);
+                    //return ((biggestTimeIndexH - biggestTimeIndexV));
+
+                    //// Return the phase difference
+                    //double phaseH = spectrumHorizontal[hIndex].Phase;
+                    //double phaseV = spectrumVertical[vIndex].Phase;
+
+                    //if (phaseH > phaseV) return -1;
+                    //else return 1;
+                }
+            }
+
+            return 0;
+        }
+
+        private void GetPhase(System.Numerics.Complex[] spectrumHorizontal,
+            System.Numerics.Complex[] spectrumVertical,
+            out double phaseH, out double phaseV, out double phaseDiff)
+        {
+            // Only check for the first 5 values
+            double biggestMagnitudeH = 0;
+            int hIndex = 0;
+            double biggestMagnitudeV = 0;
+            int vIndex = 0;
+
+            for (int i = 0; i < 5; ++i)
+            {
+                if (spectrumHorizontal[i].Magnitude > biggestMagnitudeH)
+                {
+                    biggestMagnitudeH = spectrumHorizontal[i].Magnitude;
+                    hIndex = i;
+                }
+
+                if (spectrumVertical[i].Magnitude > biggestMagnitudeV)
+                {
+                    biggestMagnitudeV = spectrumVertical[i].Magnitude;
+                    vIndex = i;
+                }
+            }
+
+            phaseH = spectrumHorizontal[hIndex].Phase;
+            phaseV = spectrumVertical[vIndex].Phase;
+
+            // In case diff bigger than Pi -> normalize
+            double diff = phaseH - phaseV;
+            if (diff > Math.PI)
+            {
+                phaseV = phaseV + 2 * Math.PI;
+            }
+            else if (diff < (-Math.PI))
+            {
+                phaseV = phaseV - 2 * Math.PI;
+            }
+
+            phaseDiff = phaseH - phaseV;
+        }
+
+        private int sameSignSince = 0;
+        private bool isPositive = false;
+
+        /// <summary>
+        /// System.Numerics.Complex[,] dopplerFFTMatrix = new System.Numerics.Complex[spectrumLen, radarConfiguration.ChirpsPerFrame];
+        /// so x is range and y is the velocity
+        /// 
+        /// 
+        /// Rx1 - Rx3 -> horizontal
+        /// Rx2 - Rx3 -> vertical
+        /// </summary>
+        /// <param name="dopplerFFTMatrixRx1"></param>
+        /// <param name="dopplerFFTMatrixRx2"></param>
+        /// <param name="dopplerFFTMatrixRx3"></param>
         public void UpdateData(System.Numerics.Complex[,] dopplerFFTMatrixRx1, System.Numerics.Complex[,] dopplerFFTMatrixRx2, System.Numerics.Complex[,] dopplerFFTMatrixRx3)
         {
-            // System.Numerics.Complex[,] dopplerFFTMatrix = new System.Numerics.Complex[spectrumLen, radarConfiguration.ChirpsPerFrame];
-            // so x is range and y is the 
-
-            // Rx1 - Rx3 -> horizontal
-            // Rx2 - Rx3 -> vertical
-
-
-
             int maxX = 0;
             int maxY = 0;
             double maxVal = getMaxXMaxY(dopplerFFTMatrixRx1, out maxX, out maxY);
 
-            if (maxVal > 0.1)
+            if (maxVal > threshold)
             {
-                /*
-                // horizontal angle index (1 - 3)
-                double horizontalPhase = dopplerFFTMatrixRx1[maxX, maxY].Phase - dopplerFFTMatrixRx3[maxX, maxY].Phase;
-                double verticalPhase = dopplerFFTMatrixRx2[maxX, maxY].Phase - dopplerFFTMatrixRx3[maxX, maxY].Phase;
+                belowThresholdCount = 0;
 
-                double delta = 0;
-                if (double.IsNaN(lastH) == false)
-                {
-                    delta = horizontalPhase - lastH;
-                    if (delta > Math.PI) offsetH = offsetH - 2 * Math.PI;
-                    else if (delta < -Math.PI) offsetH = offsetH + 2 * Math.PI;
-                }
-                lastH = horizontalPhase;
-
-                delta = 0;
-                if (double.IsNaN(lastV) == false)
-                {
-                    delta = verticalPhase - lastV;
-                    if (delta > Math.PI) offsetV = offsetV - 2 * Math.PI;
-                    else if (delta < -Math.PI) offsetV = offsetV + 2 * Math.PI;
-                }
-                lastV = verticalPhase;
-
-
-                hLineSeries.Points.Add(new DataPoint(timeIndex, horizontalPhase + offsetH));
-                vLineSeries.Points.Add(new DataPoint(timeIndex, verticalPhase + offsetV));
-                */
                 double rx1 = dopplerFFTMatrixRx1[maxX, maxY].Phase;
                 double rx2 = dopplerFFTMatrixRx2[maxX, maxY].Phase;
                 double rx3 = dopplerFFTMatrixRx3[maxX, maxY].Phase;
@@ -285,16 +424,31 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
                 fftInH.Add(hPhase);
                 fftInV.Add(vPhase);
 
-                //if (hLineSeries.Points.Count > 64)
+                // Need at least 32 points (~ 1 second of data)
                 if (hLineSeries.Points.Count > 32)
                 {
                     int fftPointCount = 32;
 
-                    if (hLineSeries.Points.Count > 64)
+                    // In case movement since more time -> use longer integration time (better resolution)
+                    //if (hLineSeries.Points.Count > 64)
+                    //{
+                    //    fftPointCount = 64;
+                    //    hLineSeries.Points.RemoveAt(0);
+                    //    vLineSeries.Points.RemoveAt(0);
+
+                    //    fftInH.RemoveAt(0);
+                    //    fftInV.RemoveAt(0);
+                    //}
+
+                    // Let the last 5 seconds points
+                    //if (hLineSeries.Points.Count > (5*30))
+                    if (hLineSeries.Points.Count > (32))
                     {
-                        fftPointCount = 64;
                         hLineSeries.Points.RemoveAt(0);
                         vLineSeries.Points.RemoveAt(0);
+                        rotationDetectedLineSeries.Points.RemoveAt(0);
+                        fftHPhaseLineSeries.Points.RemoveAt(0);
+                        fftVPhaseLineSeries.Points.RemoveAt(0);
 
                         fftInH.RemoveAt(0);
                         fftInV.RemoveAt(0);
@@ -307,58 +461,135 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
                     // Compute real FFT
                     // Size of spectrum is (SamplesPerChirp / 2) + 1
                     //double[] fftIn = new double[fftInH.Count];
-                    double[] fftIn = new double[fftPointCount];
+                    double[] hFftIn = new double[fftPointCount];
 
                     //for (int i = 0; i < fftInH.Count; i++)
                     for (int i = startIndex; i < (startIndex + fftPointCount); i++)
                     {
-                        fftIn[i - startIndex] = fftInH[i];
+                        hFftIn[i - startIndex] = fftInH[i];
                     }
 
                     // Compute the average and remove it
-                    double average = ArrayUtils.getAverage(fftIn);
-                    ArrayUtils.offsetInPlace(fftIn, -average);
+                    double average = ArrayUtils.getAverage(hFftIn);
+                    ArrayUtils.offsetInPlace(hFftIn, -average);
 
-                    System.Numerics.Complex[] spectrum = FftSharp.FFT.ForwardReal(fftIn);
+                    System.Numerics.Complex[] spectrumHorizontal = FftSharp.FFT.ForwardReal(hFftIn);
 
                     phaseHLineSeries.Points.Clear();
-                    for(int i = 0; i  < spectrum.Length; i++)
+                    for(int i = 0; i  < spectrumHorizontal.Length; i++)
                     {
-                        phaseHLineSeries.Points.Add(new DataPoint(i, spectrum[i].Magnitude));
+                        double magnitude = spectrumHorizontal[i].Magnitude / fftPointCount;
+                        phaseHLineSeries.Points.Add(new DataPoint(i, magnitude));
                     }
 
-                    //for (int i = 0; i < fftInV.Count; i++)
+
+                    // --------------------------------------------------------------
+                    // Vertical
+                    double[] vFftIn = new double[fftPointCount];
                     for (int i = startIndex; i < (startIndex + fftPointCount); i++)
                     {
-                        fftIn[i - startIndex] = fftInV[i];
+                        vFftIn[i - startIndex] = fftInV[i];
                     }
 
                     // Compute the average and remove it
-                    average = ArrayUtils.getAverage(fftIn);
-                    ArrayUtils.offsetInPlace(fftIn, -average);
+                    average = ArrayUtils.getAverage(vFftIn);
+                    ArrayUtils.offsetInPlace(vFftIn, -average);
 
-                    spectrum = FftSharp.FFT.ForwardReal(fftIn);
+                    System.Numerics.Complex[] spectrumVertical = FftSharp.FFT.ForwardReal(vFftIn);
 
                     phaseVLineSeries.Points.Clear();
-                    for (int i = 0; i < spectrum.Length; i++)
+                    for (int i = 0; i < spectrumVertical.Length; i++)
                     {
-                        phaseVLineSeries.Points.Add(new DataPoint(i, spectrum[i].Magnitude));
+                        double magnitude = spectrumVertical[i].Magnitude / fftPointCount;
+                        phaseVLineSeries.Points.Add(new DataPoint(i, magnitude));
                     }
+
+                    GetPhase(spectrumHorizontal, spectrumVertical, out double phaseHFFT, out double phaseVFFT, out double phaseDiff);
+                    fftHPhaseLineSeries.Points.Add(new DataPoint(timeIndex, phaseHFFT));
+                    fftVPhaseLineSeries.Points.Add(new DataPoint(timeIndex, phaseVFFT));
+                    //fftVPhaseLineSeries.Points.Add(new DataPoint(timeIndex, phaseDiff));
+                    //fftHPhaseLineSeries.Points.Add(new DataPoint(timeIndex, double.NaN));
+                    //fftVPhaseLineSeries.Points.Add(new DataPoint(timeIndex, double.NaN));
+
+                    rotationDetectedLineSeries.Points.Add(new DataPoint(timeIndex, phaseDiff));
+
+                    int rotDetected = 0;
+
+                    if (phaseDiff > 0)
+                    {
+                        if (isPositive)
+                        {
+                            sameSignSince++;
+                            if (sameSignSince > 8)
+                            {
+                                rotDetected = 1;
+                            }
+                        }
+                        else
+                        {
+                            // Was negative before...
+                            sameSignSince = 0;
+                            rotDetected = 0;
+                        }
+                        isPositive = true;
+                    }
+                    else
+                    {
+                        if (isPositive == false)
+                        {
+                            sameSignSince++;
+                            if (sameSignSince > 8)
+                            {
+                                rotDetected = -1;
+                            }
+                        }
+                        else
+                        {
+                            // Was positive before...
+                            sameSignSince = 0;
+                            rotDetected = 0;
+                        }
+                        isPositive = false;
+                    }
+
+                    //rotationDetectedLineSeries.Points.Add(new DataPoint(timeIndex, rotDetected));
+
+                    /*rotationDetectedLineSeries.Points.Add(new DataPoint
+                        (timeIndex, DetectRotation(spectrumHorizontal, spectrumVertical, hFftIn, vFftIn)));*/
                 }
+                else
+                {
+                    // Not enough for FFT
+                    rotationDetectedLineSeries.Points.Add(new DataPoint(timeIndex, 0));
+                    fftHPhaseLineSeries.Points.Add(new DataPoint(timeIndex, 0));
+                    fftVPhaseLineSeries.Points.Add(new DataPoint(timeIndex, 0));
+                    sameSignSince = 0;
+                }
+
+                timeIndex += 1;
             }
             else
             {
-                hLineSeries.Points.Clear();
-                vLineSeries.Points.Clear();
+                sameSignSince = 0;
+                belowThresholdCount++;
+                if (belowThresholdCount >= 2)
+                {
+                    hLineSeries.Points.Clear();
+                    vLineSeries.Points.Clear();
+                    rotationDetectedLineSeries.Points.Clear();
+                    fftVPhaseLineSeries.Points.Clear();
+                    fftHPhaseLineSeries.Points.Clear();
 
-                phaseVLineSeries.Points.Clear();
-                phaseHLineSeries.Points.Clear();
+                    phaseVLineSeries.Points.Clear();
+                    phaseHLineSeries.Points.Clear();
 
-                fftInH.Clear();
-                fftInV.Clear();
+                    fftInH.Clear();
+                    fftInV.Clear();
+
+                    timeIndex = 0;
+                }
             }
 
-            timeIndex += 1;
             plotView.InvalidatePlot(true);
             fftPlotView.InvalidatePlot(true);
         }

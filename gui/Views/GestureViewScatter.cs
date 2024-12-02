@@ -206,6 +206,14 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 
             if (maxMag > threshold)
             {
+                if (maxY > 100)
+                {
+                    maxY = maxY - 100;
+                }
+                else
+                {
+                    maxY = maxY + 28;
+                }
                 data.Add(new DataWithTimeStamp(maxX, maxY, maxRange, maxMag));
             }
         }

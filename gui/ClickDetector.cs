@@ -8,6 +8,10 @@ namespace RDK2_Radar_SignalProcessing_GUI
 {
     public class ClickDetector
     {
+        public const int DIRECTION_LEFT = 0;
+        public const int DIRECTION_RIGHT = 1;
+        public const int DIRECTION_NONE = 2;
+
         private double threshold = 0.1;
         private const int NONE_VALUE = -1;
 
@@ -21,11 +25,14 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
         private int lastState = NONE_VALUE;
 
-        public delegate void OnNewClickEventHandler(object sender);
+        public delegate void OnNewClickEventHandler(object sender, int direction);
         public event OnNewClickEventHandler? OnNewClick;
 
         public delegate void OnHandDetectedEventHandler(object sender, bool status);
         public event OnHandDetectedEventHandler? OnHandDetected;
+
+        public delegate void OnReadyForNextActionEventHandler(object sender, bool status);
+        public event OnReadyForNextActionEventHandler? OnReadyForNextAction;
 
         private enum ClickDetectorStatus
         {
@@ -44,12 +51,14 @@ namespace RDK2_Radar_SignalProcessing_GUI
         /// <param name="dopplerFFTMatrix"></param>
         /// <param name="maxRange"></param>
         /// <param name="maxMag"></param>
-        private void getMaxAmplitudeRange(System.Numerics.Complex[,] dopplerFFTMatrix, out int maxRange, out double maxMag)
+        private void getMaxAmplitudeRange(System.Numerics.Complex[,] dopplerFFTMatrix, out int maxRange, out double maxMag, out int maxSpeed)
         {
             maxMag = 0;
             maxRange = 0;
+            maxSpeed = 0;
 
-            for (int i = 0; i < dopplerFFTMatrix.GetLength(0); i++)
+            //for (int i = 0; i < dopplerFFTMatrix.GetLength(0); i++)
+            for (int i = 0; i < 8; i++) // Reduce the range to 8 * 2.7cm = 21.6 cm
             {
                 for (int j = 0; j < dopplerFFTMatrix.GetLength(1); j++)
                 {
@@ -58,6 +67,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
                     {
                         maxMag = magnitude;
                         maxRange = i;
+                        maxSpeed = j;
                     }
                 }
             }
@@ -69,9 +79,34 @@ namespace RDK2_Radar_SignalProcessing_GUI
         private int startTime = 0;
         private int minValue = 0;
 
+        private double hAtStart = 0;
+        private double hAtMin = 0;
+        private double hAtLast = 0;
+
         private void Debug(string text)
         {
             System.Diagnostics.Debug.WriteLine(text);
+        }
+
+        /// <summary>
+        /// Get difference between two angles
+        /// Result is always between -pi and pi
+        /// </summary>
+        /// <param name="a1"></param>
+        /// <param name="a2"></param>
+        /// <returns></returns>
+        private double getAngleDiff(double a1, double a2)
+        {
+            double sign = -1;
+            if (a1 > a2) sign = 1;
+
+            double angle = a1 - a2;
+            double k = -sign * Math.PI * 2;
+            if (Math.Abs(k + angle) < Math.Abs(angle))
+            {
+                return k + angle;
+            }
+            return angle;
         }
 
         public void UpdateData(System.Numerics.Complex[,] dopplerFFTMatrixRx1,
@@ -80,13 +115,23 @@ namespace RDK2_Radar_SignalProcessing_GUI
         {
             int maxRange = 0;
             double maxMag = 0;
+            int maxSpeed = 0;
 
-            getMaxAmplitudeRange(dopplerFFTMatrixRx1, out maxRange, out maxMag);
+            double hdiff = 0;
+
+            getMaxAmplitudeRange(dopplerFFTMatrixRx1, out maxRange, out maxMag, out maxSpeed);
 
             // Amplitude bigger than threshold?
             if (maxMag < threshold)
             {
                 maxRange = NONE_VALUE;
+            }
+            else
+            {
+                double rx1 = dopplerFFTMatrixRx1[maxRange, maxSpeed].Phase;
+                double rx3 = dopplerFFTMatrixRx3[maxRange, maxSpeed].Phase;
+
+                hdiff = getAngleDiff(rx1, rx3);
             }
 
             if (lastState == NONE_VALUE && maxRange != NONE_VALUE)
@@ -109,6 +154,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
                     {
                         noneCount = 0;
                         status = ClickDetectorStatus.WAIT_START_POINT;
+                        OnReadyForNextAction?.Invoke(this, true);
                     }
                     break;
 
@@ -119,7 +165,9 @@ namespace RDK2_Radar_SignalProcessing_GUI
                         minValue = startPoint;
                         startTime = 0;
                         status = ClickDetectorStatus.WAIT_DECREASE;
+                        hAtStart = hdiff;
                         Debug("WAIT_DECREASE");
+                        OnReadyForNextAction?.Invoke(this, false);
                     }
                     break;
 
@@ -132,7 +180,11 @@ namespace RDK2_Radar_SignalProcessing_GUI
                             break;
                         }
 
-                        if (maxRange < minValue) minValue = maxRange;
+                        if (maxRange < minValue)
+                        {
+                            hAtMin = hdiff;
+                            minValue = maxRange;
+                        }
 
                         int diff = startPoint - minValue;
                         if (diff >= DECREASE_AMPLITUDE)
@@ -163,14 +215,22 @@ namespace RDK2_Radar_SignalProcessing_GUI
                             break;
                         }
 
-                        if (maxRange < minValue) minValue = maxRange;
+                        if (maxRange < minValue)
+                        {
+                            hAtMin = hdiff;
+                            minValue = maxRange;
+                        }
 
                         int diff = maxRange - minValue;
                         if (diff >= INCREASE_AMPLITUDE)
                         {
                             status = ClickDetectorStatus.WAIT_NOTHING_AFTER;
                             startTime = 0;
+                            hAtLast = hdiff;
                             Debug("WAIT_NOTHING_AFTER");
+                            Debug(string.Format("Start: {0}", hAtStart));
+                            Debug(string.Format("Min: {0}", hAtMin));
+                            Debug(string.Format("Last: {0}", hAtLast));
                             break;
                         }
 
@@ -189,9 +249,38 @@ namespace RDK2_Radar_SignalProcessing_GUI
                     {
                         if (maxRange == NONE_VALUE)
                         {
+                            int direction = DIRECTION_NONE;
                             // Click detected
                             System.Diagnostics.Debug.WriteLine("Click detected " + clickCount.ToString());
-                            OnNewClick?.Invoke(this);
+
+                            /*
+                            if ((hAtStart < (-Math.PI / 4))
+                                && (hAtLast > (0))
+                                && (hAtMin > hAtStart)
+                                && (hAtMin < hAtLast))
+                            {
+                                direction = DIRECTION_RIGHT;
+                            }
+                            else if ((hAtStart > (Math.PI / 4))
+                                && (hAtLast < (0))
+                                && (hAtMin < hAtStart)
+                                && (hAtMin > hAtLast))
+                            {
+                                direction = DIRECTION_LEFT;
+                            }
+                            */
+                            if (hAtLast > hAtStart)
+                            {
+                                double diff = hAtLast - hAtStart;
+                                if (diff > (Math.PI / 2)) direction = DIRECTION_RIGHT;
+                            }
+                            else
+                            {
+                                double diff = hAtStart - hAtLast;
+                                if (diff > (Math.PI / 2)) direction = DIRECTION_LEFT;
+                            }
+
+                            OnNewClick?.Invoke(this, direction);
                             clickCount++;
                             status = ClickDetectorStatus.WAIT_NOTHING_BEFORE;
                             break;
