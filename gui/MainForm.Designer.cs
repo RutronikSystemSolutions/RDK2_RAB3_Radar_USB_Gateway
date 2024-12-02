@@ -39,6 +39,7 @@
             dataLoggerToolStripMenuItem = new ToolStripMenuItem();
             startToolStripMenuItem = new ToolStripMenuItem();
             stopToolStripMenuItem = new ToolStripMenuItem();
+            playbackToolStripMenuItem = new ToolStripMenuItem();
             rdk2ConnectionStateTextBox = new TextBox();
             rangefftView = new Views.RangeFFTView();
             statusStrip1 = new StatusStrip();
@@ -57,8 +58,8 @@
             distanceView = new Views.DistanceView();
             gestureViewScatter = new Views.GestureViewScatter();
             mainSplitContainer = new SplitContainer();
+            userFeedbackView = new Views.UserFeedbackView();
             logView = new Views.LogView();
-            playbackToolStripMenuItem = new ToolStripMenuItem();
             menuStrip.SuspendLayout();
             statusStrip1.SuspendLayout();
             tabControl.SuspendLayout();
@@ -155,7 +156,7 @@
             // startToolStripMenuItem
             // 
             startToolStripMenuItem.Name = "startToolStripMenuItem";
-            startToolStripMenuItem.Size = new Size(224, 26);
+            startToolStripMenuItem.Size = new Size(150, 26);
             startToolStripMenuItem.Text = "Start";
             startToolStripMenuItem.Click += startToolStripMenuItem_Click;
             // 
@@ -163,9 +164,16 @@
             // 
             stopToolStripMenuItem.Enabled = false;
             stopToolStripMenuItem.Name = "stopToolStripMenuItem";
-            stopToolStripMenuItem.Size = new Size(224, 26);
+            stopToolStripMenuItem.Size = new Size(150, 26);
             stopToolStripMenuItem.Text = "Stop";
             stopToolStripMenuItem.Click += stopToolStripMenuItem_Click;
+            // 
+            // playbackToolStripMenuItem
+            // 
+            playbackToolStripMenuItem.Name = "playbackToolStripMenuItem";
+            playbackToolStripMenuItem.Size = new Size(150, 26);
+            playbackToolStripMenuItem.Text = "Playback";
+            playbackToolStripMenuItem.Click += playbackToolStripMenuItem_Click;
             // 
             // rdk2ConnectionStateTextBox
             // 
@@ -356,25 +364,27 @@
             // 
             // mainSplitContainer.Panel2
             // 
+            mainSplitContainer.Panel2.Controls.Add(userFeedbackView);
             mainSplitContainer.Panel2.Controls.Add(logView);
             mainSplitContainer.Size = new Size(937, 439);
             mainSplitContainer.SplitterDistance = 619;
             mainSplitContainer.TabIndex = 14;
             // 
+            // userFeedbackView
+            // 
+            userFeedbackView.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            userFeedbackView.Location = new Point(3, 3);
+            userFeedbackView.Name = "userFeedbackView";
+            userFeedbackView.Size = new Size(308, 221);
+            userFeedbackView.TabIndex = 1;
+            // 
             // logView
             // 
-            logView.Dock = DockStyle.Fill;
-            logView.Location = new Point(0, 0);
+            logView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            logView.Location = new Point(0, 230);
             logView.Name = "logView";
-            logView.Size = new Size(314, 439);
+            logView.Size = new Size(314, 209);
             logView.TabIndex = 0;
-            // 
-            // playbackToolStripMenuItem
-            // 
-            playbackToolStripMenuItem.Name = "playbackToolStripMenuItem";
-            playbackToolStripMenuItem.Size = new Size(224, 26);
-            playbackToolStripMenuItem.Text = "Playback";
-            playbackToolStripMenuItem.Click += playbackToolStripMenuItem_Click;
             // 
             // MainForm
             // 
@@ -450,5 +460,6 @@
         private Views.LogView logView;
         private ToolStripStatusLabel handDetectedToolStripStatusLabel;
         private ToolStripMenuItem playbackToolStripMenuItem;
+        private Views.UserFeedbackView userFeedbackView;
     }
 }

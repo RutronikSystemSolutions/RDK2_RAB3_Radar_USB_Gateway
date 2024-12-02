@@ -16,6 +16,9 @@
     <Compile Update="ThresholdConfigurationForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="UIControls\VerticalProgressBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Views\AnglePresenceView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -47,6 +50,9 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="Views\TimeSignalView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Views\UserFeedbackView.cs">
       <SubType>UserControl</SubType>
     </Compile>
   </ItemGroup>

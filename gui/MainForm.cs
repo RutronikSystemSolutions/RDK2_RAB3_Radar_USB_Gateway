@@ -86,6 +86,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
             //gestureDetector.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
             clickDetector.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
+            userFeedbackView.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
         }
 
         private void Rdk2_OnNewConnectionState(object sender, RDK2.ConnectionState state)
