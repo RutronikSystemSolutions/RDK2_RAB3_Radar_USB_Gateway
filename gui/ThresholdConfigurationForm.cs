@@ -13,18 +13,11 @@ namespace RDK2_Radar_SignalProcessing_GUI
 {
     public partial class ThresholdConfigurationForm : Form
     {
-        private RadarSignalProcessor radarSignalProcessor;
+        public double threshold = 0.1;
 
         public ThresholdConfigurationForm()
         {
             InitializeComponent();
-            radarSignalProcessor = new RadarSignalProcessor(new RadarConfiguration());
-        }
-
-        public ThresholdConfigurationForm(RadarSignalProcessor radarSignalProcessor)
-        {
-            InitializeComponent();
-            this.radarSignalProcessor = radarSignalProcessor;
         }
 
         private void setThresholdValueButton_Click(object sender, EventArgs e)
@@ -33,13 +26,16 @@ namespace RDK2_Radar_SignalProcessing_GUI
             {
                 string text = thresholdValueTextBox.Text.Replace(',', '.');
                 double threshold = double.Parse(text, System.Globalization.CultureInfo.InvariantCulture);
-                radarSignalProcessor.setThresholdValue(threshold);
+                this.threshold = threshold;
             }
             catch(Exception)
             {
                 MessageBox.Show("Wrong threshold value, please correct.");
                 return;
             }
+
+            DialogResult = DialogResult.OK;
+            Close();
         }
     }
 }

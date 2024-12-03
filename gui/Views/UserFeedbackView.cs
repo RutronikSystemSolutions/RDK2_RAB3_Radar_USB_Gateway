@@ -14,8 +14,8 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 {
     public partial class UserFeedbackView : UserControl
     {
-        private const int MAX_DETECTED_RANGE = 14;
-        private const int MIN_DETECTED_RANGE = 1;
+        private int maxRange = (RadarConfiguration.SAMPLES_PER_CHIRP / 2) + 1;
+        private int minRange = 0;
         private const int NONE = -1;
         private double threshold = 0.1;
 
@@ -32,24 +32,36 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
         public UserFeedbackView()
         {
             InitializeComponent();
-            verticalProgressBar.SetMinMax(MIN_DETECTED_RANGE, MAX_DETECTED_RANGE);
+            verticalProgressBar.SetMinMax(minRange, maxRange);
             guiUpdateTime.Start();
         }
 
-        private void getMaxAmplitudeRange(System.Numerics.Complex[,] dopplerFFTMatrix, out int maxRange, out double maxMag)
+        public void SetThreshold(double threshold)
         {
-            maxMag = 0;
-            maxRange = 0;
+            this.threshold = threshold;
+        }
 
-            for (int i = 0; i < dopplerFFTMatrix.GetLength(0); i++)
+        public void SetRange(int min, int max)
+        {
+            minRange = min;
+            maxRange = max;
+            verticalProgressBar.SetMinMax(minRange, maxRange);
+        }
+
+        private void getMaxAmplitudeRange(System.Numerics.Complex[,] dopplerFFTMatrix, out int maxDetectedRange, out double maxDetectedMag)
+        {
+            maxDetectedMag = 0;
+            maxDetectedRange = 0;
+
+            for (int i = minRange; i < maxRange; i++)
             {
                 for (int j = 0; j < dopplerFFTMatrix.GetLength(1); j++)
                 {
                     double magnitude = dopplerFFTMatrix[i, j].Magnitude;
-                    if (magnitude > maxMag)
+                    if (magnitude > maxDetectedMag)
                     {
-                        maxMag = magnitude;
-                        maxRange = i;
+                        maxDetectedMag = magnitude;
+                        maxDetectedRange = i;
                     }
                 }
             }
@@ -106,14 +118,14 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 
         private void guiUpdateTime_Tick(object sender, EventArgs e)
         {
-            int maxRange = NONE;
+            int currentMaxRange = NONE;
             int clickDo = 0;
             int leftMoveDo = 0;
             int rightMoveDo = 0;
 
             lock(sync)
             {
-                maxRange = lastMaxRange;
+                currentMaxRange = lastMaxRange;
                 clickDo = click;
                 leftMoveDo = leftMove;
                 rightMoveDo = rightMove;
@@ -123,13 +135,13 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
                 if (rightMove >= 0) rightMove--;
             }
 
-            if (maxRange == NONE)
+            if (currentMaxRange == NONE)
             {
-                verticalProgressBar.SetValue(MAX_DETECTED_RANGE);
+                verticalProgressBar.SetValue(maxRange);
             }
             else
             {
-                verticalProgressBar.SetValue(maxRange);
+                verticalProgressBar.SetValue(currentMaxRange);
             }
 
             if (clickDo == ACTION_RESET)

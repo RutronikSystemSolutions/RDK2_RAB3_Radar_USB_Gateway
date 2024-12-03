@@ -34,6 +34,7 @@
             maxRangeMetersTextBox = new TextBox();
             maxRangeTrackBar = new TrackBar();
             maxRangeLabel = new Label();
+            okButton = new Button();
             ((System.ComponentModel.ISupportInitialize)minRangeTrackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)maxRangeTrackBar).BeginInit();
             SuspendLayout();
@@ -88,11 +89,23 @@
             maxRangeLabel.TabIndex = 3;
             maxRangeLabel.Text = "Max Range:";
             // 
+            // okButton
+            // 
+            okButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            okButton.Location = new Point(694, 100);
+            okButton.Name = "okButton";
+            okButton.Size = new Size(94, 29);
+            okButton.TabIndex = 6;
+            okButton.Text = "Ok";
+            okButton.UseVisualStyleBackColor = true;
+            okButton.Click += okButton_Click;
+            // 
             // TargetDetectionConfigurationForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 141);
+            Controls.Add(okButton);
             Controls.Add(maxRangeMetersTextBox);
             Controls.Add(maxRangeTrackBar);
             Controls.Add(maxRangeLabel);
@@ -115,5 +128,6 @@
         private TextBox maxRangeMetersTextBox;
         private TrackBar maxRangeTrackBar;
         private Label maxRangeLabel;
+        private Button okButton;
     }
 }

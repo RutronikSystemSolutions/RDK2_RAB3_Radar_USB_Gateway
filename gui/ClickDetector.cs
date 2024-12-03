@@ -18,8 +18,9 @@ namespace RDK2_Radar_SignalProcessing_GUI
         private int NOTHING_BEFORE_COUNT = 5;
         private int START_TO_MIN = 15;
         private int MIN_TO_STOP = 15;
-        private int DECREASE_AMPLITUDE = 5; // ~15 cm
+        private int DECREASE_AMPLITUDE = 5; // ~15 cm 5 * 2.7cm
         private int INCREASE_AMPLITUDE = 4; // 10cm
+        private int NOTHING_DURING_DECREASE_MAX = 2;
 
         private int clickCount = 0;
 
@@ -33,6 +34,9 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
         public delegate void OnReadyForNextActionEventHandler(object sender, bool status);
         public event OnReadyForNextActionEventHandler? OnReadyForNextAction;
+
+        private int minRange = 0;
+        private int maxRange = (RadarConfiguration.SAMPLES_PER_CHIRP / 2) + 1;
 
         private enum ClickDetectorStatus
         {
@@ -49,25 +53,27 @@ namespace RDK2_Radar_SignalProcessing_GUI
         /// From a doppler FFT matrix, extract biggest range (index can be converted to meter) and the biggest magnitude
         /// </summary>
         /// <param name="dopplerFFTMatrix"></param>
-        /// <param name="maxRange"></param>
-        /// <param name="maxMag"></param>
-        private void getMaxAmplitudeRange(System.Numerics.Complex[,] dopplerFFTMatrix, out int maxRange, out double maxMag, out int maxSpeed)
+        /// <param name="maxDetectedRange"></param>
+        /// <param name="maxDetectedMag"></param>
+        private void getMaxAmplitudeRange(System.Numerics.Complex[,] dopplerFFTMatrix, 
+            out int maxDetectedRange, out double maxDetectedMag, out int maxDetectedSpeed)
         {
-            maxMag = 0;
-            maxRange = 0;
-            maxSpeed = 0;
+            maxDetectedMag = 0;
+            maxDetectedRange = 0;
+            maxDetectedSpeed = 0;
 
             //for (int i = 0; i < dopplerFFTMatrix.GetLength(0); i++)
-            for (int i = 0; i < 8; i++) // Reduce the range to 8 * 2.7cm = 21.6 cm
+            //for (int i = 0; i < 8; i++) // Reduce the range to 8 * 2.7cm = 21.6 cm
+            for (int i = minRange; i < maxRange; ++i)
             {
                 for (int j = 0; j < dopplerFFTMatrix.GetLength(1); j++)
                 {
                     double magnitude = dopplerFFTMatrix[i, j].Magnitude;
-                    if (magnitude > maxMag)
+                    if (magnitude > maxDetectedMag)
                     {
-                        maxMag = magnitude;
-                        maxRange = i;
-                        maxSpeed = j;
+                        maxDetectedMag = magnitude;
+                        maxDetectedRange = i;
+                        maxDetectedSpeed = j;
                     }
                 }
             }
@@ -82,6 +88,8 @@ namespace RDK2_Radar_SignalProcessing_GUI
         private double hAtStart = 0;
         private double hAtMin = 0;
         private double hAtLast = 0;
+
+        private int noneDuringDecreaseCount = 0;
 
         private void Debug(string text)
         {
@@ -107,6 +115,17 @@ namespace RDK2_Radar_SignalProcessing_GUI
                 return k + angle;
             }
             return angle;
+        }
+
+        public void SetThreshold(double threshold)
+        {
+            this.threshold = threshold;
+        }
+
+        public void SetRange(int min, int max)
+        {
+            minRange = min;
+            maxRange = max;
         }
 
         public void UpdateData(System.Numerics.Complex[,] dopplerFFTMatrixRx1,
@@ -165,6 +184,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
                         minValue = startPoint;
                         startTime = 0;
                         status = ClickDetectorStatus.WAIT_DECREASE;
+                        noneDuringDecreaseCount = 0;
                         hAtStart = hdiff;
                         Debug("WAIT_DECREASE");
                         OnReadyForNextAction?.Invoke(this, false);
@@ -175,10 +195,21 @@ namespace RDK2_Radar_SignalProcessing_GUI
                     {
                         if (maxRange == NONE_VALUE)
                         {
-                            status = ClickDetectorStatus.WAIT_NOTHING_BEFORE;
-                            Debug("WAIT_NOTHING_BEFORE - none value");
-                            break;
+                            noneDuringDecreaseCount++;
+                            if (noneDuringDecreaseCount > NOTHING_DURING_DECREASE_MAX)
+                            {
+                                status = ClickDetectorStatus.WAIT_NOTHING_BEFORE;
+                                Debug("WAIT_NOTHING_BEFORE - none value");
+                                break;
+                            }
+                            else
+                            {
+                                // Nothing to do
+                                break;
+                            }
                         }
+
+                        noneDuringDecreaseCount = 0;
 
                         if (maxRange < minValue)
                         {

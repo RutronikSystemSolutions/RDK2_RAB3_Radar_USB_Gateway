@@ -20,7 +20,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
         public delegate void OnNewFrameSpectrumEventHandler(object sender, System.Numerics.Complex[] spectrum, int antennaIndex);
         public event OnNewFrameSpectrumEventHandler? OnNewFrameSpectrum;
 
-        public delegate void OnNewEnergyOverTimeEventHandler(object sender, double energy, double threshold, int antennaIndex);
+        public delegate void OnNewEnergyOverTimeEventHandler(object sender, double energy, int antennaIndex);
         public event OnNewEnergyOverTimeEventHandler? OnNewEnergyOverTime;
 
         //public delegate void OnNewDBFOutputEventHandler(object sender, System.Numerics.Complex[,] dbfOutput);
@@ -71,24 +71,6 @@ namespace RDK2_Radar_SignalProcessing_GUI
                 somethingDetected[i] = false;
                 threshold[i] = 0.1;
             }
-        }
-
-        public RadarConfiguration getRadarConfiguration()
-        {
-            return radarConfiguration;
-        }
-
-        public int getFreqBinCount()
-        {
-            // Since we use no zero padding
-            return (radarConfiguration.SamplesPerChirp / 2) + 1;
-        }
-
-        public void setObservedRange(int minBin, int maxBin)
-        {
-            if (minBin >= maxBin) return;
-            this.minBin = minBin;
-            this.maxBin = maxBin;
         }
 
         public BackgroundFilterConfiguration getBackgroundFilterConfiguration()
@@ -313,7 +295,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
                 else if (antennaIndex == 1) sendSpectrumEvent(spectrumAvg1, antennaIndex);
                 else if (antennaIndex == 2) sendSpectrumEvent(spectrumAvg2, antennaIndex);
 
-                OnNewEnergyOverTime?.Invoke(this, maxAmplitude, threshold[antennaIndex], antennaIndex);
+                OnNewEnergyOverTime?.Invoke(this, maxAmplitude, antennaIndex);
             }
         }
 
@@ -575,7 +557,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
                 else if (antennaIndex == 1) sendSpectrumEvent(spectrumAvg1, antennaIndex);
                 else if (antennaIndex == 2) sendSpectrumEvent(spectrumAvg2, antennaIndex);
 
-                OnNewEnergyOverTime?.Invoke(this, maxAmplitude, threshold[antennaIndex], antennaIndex);
+                OnNewEnergyOverTime?.Invoke(this, maxAmplitude, antennaIndex);
             }
         }
     }

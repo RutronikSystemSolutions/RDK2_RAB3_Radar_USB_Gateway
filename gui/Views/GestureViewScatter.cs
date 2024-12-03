@@ -17,7 +17,9 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
     public partial class GestureViewScatter : UserControl
     {
         private const int splitCount = 128;
-        private const double threshold = 0.1;
+        private double threshold = 0.1;
+        private int minRange = 0;
+        private int maxRange = (RadarConfiguration.SAMPLES_PER_CHIRP / 2) + 1;
         private const double maxColorValue = 100;
         private const double memoryDurationMs = 1000;
 
@@ -89,6 +91,17 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             timer.Interval = 100;
             timer.Elapsed += Timer_Elapsed;
             timer.Start();
+        }
+
+        public void SetThreshold(double threshold)
+        {
+            this.threshold = threshold;
+        }
+
+        public void SetRange(int min, int max)
+        {
+            minRange = min;
+            maxRange = max;
         }
 
         private void InitPlot()
@@ -167,13 +180,13 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             if (dopplerFFTMatrixRx2 == null) return;
             if (dopplerFFTMatrixRx3 == null) return;
 
-            double maxMag = 0;
+            double maxDetectedMag = 0;
             int maxX = 0;
             int maxY = 0;
-            int maxRange = 0;
+            int maxDetectedRange = 0;
 
             // Check for all values above the threshold
-            for (int i = 0; i < dopplerFFTMatrixRx1.GetLength(0); i++)
+            for (int i = minRange; i < maxRange; i++)
             {
                 for (int j = 0; j < dopplerFFTMatrixRx1.GetLength(1); j++)
                 {
@@ -193,18 +206,18 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
                         // Add to the history
                         //data.Add(new DataWithTimeStamp(xindex, yindex, i, magnitude));
 
-                        if (magnitude > maxMag)
+                        if (magnitude > maxDetectedMag)
                         {
-                            maxMag = magnitude;
+                            maxDetectedMag = magnitude;
                             maxX = xindex;
                             maxY = yindex;
-                            maxRange = i;
+                            maxDetectedRange = i;
                         }
                     }
                 }
             }
 
-            if (maxMag > threshold)
+            if (maxDetectedMag > threshold)
             {
                 if (maxY > 100)
                 {
@@ -214,7 +227,7 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
                 {
                     maxY = maxY + 28;
                 }
-                data.Add(new DataWithTimeStamp(maxX, maxY, maxRange, maxMag));
+                data.Add(new DataWithTimeStamp(maxX, maxY, maxDetectedRange, maxDetectedMag));
             }
         }
 

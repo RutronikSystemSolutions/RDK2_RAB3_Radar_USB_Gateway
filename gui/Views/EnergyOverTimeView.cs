@@ -15,6 +15,8 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 {
     public partial class EnergyOverTimeView : UserControl
     {
+        private double threshold = 0.1;
+
         /// <summary>
         /// X Axis
         /// </summary>
@@ -95,7 +97,12 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             plotView.InvalidatePlot(true);
         }
 
-        public void updateData(double energy, double threshold, int antennaIndex)
+        public void SetThreshold(double threshold)
+        {
+            this.threshold = threshold;
+        }
+
+        public void updateData(double energy, int antennaIndex)
         {
             if (antennaIndex == 0)
             {

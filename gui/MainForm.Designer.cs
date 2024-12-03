@@ -33,7 +33,6 @@
             connectButton = new Button();
             menuStrip = new MenuStrip();
             configurationToolStripMenuItem = new ToolStripMenuItem();
-            backgroundFilterToolStripMenuItem = new ToolStripMenuItem();
             thresholdToolStripMenuItem = new ToolStripMenuItem();
             rangeToolStripMenuItem = new ToolStripMenuItem();
             dataLoggerToolStripMenuItem = new ToolStripMenuItem();
@@ -120,29 +119,22 @@
             // 
             // configurationToolStripMenuItem
             // 
-            configurationToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { backgroundFilterToolStripMenuItem, thresholdToolStripMenuItem, rangeToolStripMenuItem });
+            configurationToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { thresholdToolStripMenuItem, rangeToolStripMenuItem });
             configurationToolStripMenuItem.Name = "configurationToolStripMenuItem";
             configurationToolStripMenuItem.Size = new Size(114, 24);
             configurationToolStripMenuItem.Text = "Configuration";
             // 
-            // backgroundFilterToolStripMenuItem
-            // 
-            backgroundFilterToolStripMenuItem.Name = "backgroundFilterToolStripMenuItem";
-            backgroundFilterToolStripMenuItem.Size = new Size(206, 26);
-            backgroundFilterToolStripMenuItem.Text = "Background filter";
-            backgroundFilterToolStripMenuItem.Click += backgroundFilterToolStripMenuItem_Click;
-            // 
             // thresholdToolStripMenuItem
             // 
             thresholdToolStripMenuItem.Name = "thresholdToolStripMenuItem";
-            thresholdToolStripMenuItem.Size = new Size(206, 26);
+            thresholdToolStripMenuItem.Size = new Size(224, 26);
             thresholdToolStripMenuItem.Text = "Threshold";
             thresholdToolStripMenuItem.Click += thresholdToolStripMenuItem_Click;
             // 
             // rangeToolStripMenuItem
             // 
             rangeToolStripMenuItem.Name = "rangeToolStripMenuItem";
-            rangeToolStripMenuItem.Size = new Size(206, 26);
+            rangeToolStripMenuItem.Size = new Size(224, 26);
             rangeToolStripMenuItem.Text = "Range";
             rangeToolStripMenuItem.Click += rangeToolStripMenuItem_Click;
             // 
@@ -434,7 +426,6 @@
         private Button connectButton;
         private MenuStrip menuStrip;
         private ToolStripMenuItem configurationToolStripMenuItem;
-        private ToolStripMenuItem backgroundFilterToolStripMenuItem;
         private TextBox rdk2ConnectionStateTextBox;
         private Views.RangeFFTView rangefftView;
         private ToolStripMenuItem thresholdToolStripMenuItem;

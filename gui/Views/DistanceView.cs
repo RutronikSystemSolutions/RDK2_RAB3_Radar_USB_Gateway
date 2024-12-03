@@ -15,8 +15,10 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 {
     public partial class DistanceView : UserControl
     {
-        private const double threshold = 0.1;
+        private double threshold = 0.1;
         private double index = 0;
+        private int minRange = 0;
+        private int maxRange = (RadarConfiguration.SAMPLES_PER_CHIRP / 2) + 1;
 
         private double startFrequency = RadarConfiguration.START_FREQUENCY;
         private double endFrequency = RadarConfiguration.END_FREQUENCY;
@@ -67,8 +69,17 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
         {
             InitializeComponent();
             InitPlot();
-            
-            // System.Diagnostics.Debug.WriteLine(string.Format("conversion 1 tick = {0}m", indexToRange(1)));
+        }
+
+        public void SetThreshold(double threshold)
+        {
+            this.threshold = threshold;
+        }
+
+        public void SetRange(int min, int max)
+        {
+            minRange = min;
+            maxRange = max;
         }
 
         private void InitPlot()
@@ -117,26 +128,26 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             return rangeMeters;
         }
 
-        private void getMaxAmplitudeRange(System.Numerics.Complex[,] dopplerFFTMatrix, out int maxRange, out double maxMag)
+        private void getMaxAmplitudeRange(System.Numerics.Complex[,] dopplerFFTMatrix, 
+            out int maxDetectedRange, out double maxDetectedMag)
         {
-            maxMag = 0;
-            maxRange = 0;
+            maxDetectedMag = 0;
+            maxDetectedRange = 0;
 
-            for (int i = 0; i < dopplerFFTMatrix.GetLength(0); i++)
+            for (int i = minRange; i < maxRange; i++)
             {
                 for (int j = 0; j < dopplerFFTMatrix.GetLength(1); j++)
                 {
                     double magnitude = dopplerFFTMatrix[i, j].Magnitude;
-                    if (magnitude > maxMag)
+                    if (magnitude > maxDetectedMag)
                     {
-                        maxMag = magnitude;
-                        maxRange = i;
+                        maxDetectedMag = magnitude;
+                        maxDetectedRange = i;
                     }
                 }
             }
 
         }
-
         public void UpdateData(System.Numerics.Complex[,] dopplerFFTMatrixRx1, System.Numerics.Complex[,] dopplerFFTMatrixRx2, System.Numerics.Complex[,] dopplerFFTMatrixRx3)
         {
             // Should never happen but let be sure of it
@@ -145,12 +156,12 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             if (dopplerFFTMatrixRx3 == null) return;
 
             double maxMag = 0;
-            int maxRange = 0;
+            int maxDetectedRange = 0;
 
-            getMaxAmplitudeRange(dopplerFFTMatrixRx1, out maxRange, out maxMag);
+            getMaxAmplitudeRange(dopplerFFTMatrixRx1, out maxDetectedRange, out maxMag);
             if (maxMag > threshold)
             {
-                distanceLineSerieRx1.Points.Add(new DataPoint(index, indexToRange(maxRange)));
+                distanceLineSerieRx1.Points.Add(new DataPoint(index, indexToRange(maxDetectedRange)));
             }
             else
             {

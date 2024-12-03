@@ -3,6 +3,7 @@ using OxyPlot;
 using System.IO.Ports;
 using OxyPlot.Series;
 using OxyPlot.WindowsForms;
+using System.Windows.Forms;
 
 namespace RDK2_Radar_SignalProcessing_GUI
 {
@@ -115,9 +116,9 @@ namespace RDK2_Radar_SignalProcessing_GUI
             }
         }
 
-        private void RadarSignalProcessor_OnNewEnergyOverTime(object sender, double energy, double threshold, int antennaIndex)
+        private void RadarSignalProcessor_OnNewEnergyOverTime(object sender, double energy, int antennaIndex)
         {
-            energyOverTimeView.updateData(energy, threshold, antennaIndex);
+            energyOverTimeView.updateData(energy, antennaIndex);
         }
 
         private void RadarSignalProcessor_OnNewFrameSpectrum(object sender, System.Numerics.Complex[] spectrum, int antennaIndex)
@@ -133,8 +134,8 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
         private void Rdk2_OnNewFrame(object sender, ushort[] frame)
         {
-            //radarSignalProcessor.feedDopplerFFT(frame);
-            radarSignalProcessor.feedBackground(frame);
+            radarSignalProcessor.feedDopplerFFT(frame);
+            //radarSignalProcessor.feedBackground(frame);
             logger.Log(frame);
         }
 
@@ -146,9 +147,26 @@ namespace RDK2_Radar_SignalProcessing_GUI
         /// <param name="e"></param>
         private void MainForm_Load(object sender, EventArgs e)
         {
+            // Update settings if necessary
+            if (Properties.Settings.Default.minRange == -1 || Properties.Settings.Default.maxRange == -1)
+            {
+                Properties.Settings.Default.minRange = 0;
+                Properties.Settings.Default.maxRange = (RadarConfiguration.SAMPLES_PER_CHIRP / 2) + 1;
+                Properties.Settings.Default.Save();
+            }
+
             // Load the possible com ports
             string[] serialPorts = SerialPort.GetPortNames();
             comPortComboBox.DataSource = serialPorts;
+
+            // Set range everywhere
+            int minRange = Properties.Settings.Default.minRange;
+            int maxRange = Properties.Settings.Default.maxRange;
+            clickDetector.SetRange(minRange, maxRange);
+            distanceView.SetRange(minRange, maxRange);
+            gestureViewScatter.SetRange(minRange, maxRange);
+            userFeedbackView.SetRange(minRange, maxRange);
+            gestureViewTime.SetRange(minRange, maxRange);
         }
 
         /// <summary>
@@ -169,27 +187,40 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
         }
 
-        /// <summary>
-        /// Background filter
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void backgroundFilterToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            BackgroundFilterConfigurationForm form = new BackgroundFilterConfigurationForm(radarSignalProcessor);
-            form.ShowDialog();
-        }
-
         private void thresholdToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ThresholdConfigurationForm form = new ThresholdConfigurationForm(radarSignalProcessor);
-            form.ShowDialog();
+            ThresholdConfigurationForm form = new ThresholdConfigurationForm();
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                // Set threshold everywhere
+                clickDetector.SetThreshold(form.threshold);
+                energyOverTimeView.SetThreshold(form.threshold);
+                gestureViewTime.SetThreshold(form.threshold);
+                distanceView.SetThreshold(form.threshold);
+                gestureViewScatter.SetThreshold(form.threshold);
+                userFeedbackView.SetThreshold(form.threshold);
+            }
         }
 
         private void rangeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TargetDetectionConfigurationForm form = new TargetDetectionConfigurationForm(radarSignalProcessor);
-            form.ShowDialog();
+            TargetDetectionConfigurationForm form = new TargetDetectionConfigurationForm(Properties.Settings.Default.minRange,
+                Properties.Settings.Default.maxRange);
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                // Store
+                Properties.Settings.Default.minRange = form.minRange;
+                Properties.Settings.Default.maxRange = form.maxRange;
+                Properties.Settings.Default.Save();
+
+                logView.AddLog(string.Format("Set range to: {0} - {1}", form.minRange, form.maxRange));
+                // Set range everywhere
+                clickDetector.SetRange(form.minRange, form.maxRange);
+                distanceView.SetRange(form.minRange, form.maxRange);
+                gestureViewScatter.SetRange(form.minRange, form.maxRange);
+                userFeedbackView.SetRange(form.minRange, form.maxRange);
+                gestureViewTime.SetRange(form.minRange, form.maxRange);
+            }
         }
 
         private void startToolStripMenuItem_Click(object sender, EventArgs e)

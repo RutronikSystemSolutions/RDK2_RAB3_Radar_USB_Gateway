@@ -16,6 +16,8 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
     public partial class GestureViewTime : UserControl
     {
         private double threshold = 0.1;
+        private int maxRange = (RadarConfiguration.SAMPLES_PER_CHIRP / 2) + 1;
+        private int minRange = 0;
 
         /// <summary>
         /// X Axis
@@ -105,6 +107,17 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             InitFreqPlot();
         }
 
+        public void SetThreshold(double threshold)
+        {
+            this.threshold = threshold;
+        }
+
+        public void SetRange(int min, int max)
+        {
+            minRange = min;
+            maxRange = max;
+        }
+
         private void InitTimePlot()
         {
             var timeModel = new PlotModel
@@ -167,36 +180,13 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             fftPlotView.InvalidatePlot(true);
         }
 
-        private int getMaxValueX(double[,] data)
-        {
-            int maxx = 0;
-            int maxy = 0;
-            double maxvalue = data[maxx, maxy];
-            int beamCount = data.GetLength(0);
-            int freqBinCount = data.GetLength(1);
-
-            for (int x = 0; x < beamCount; ++x)
-            {
-                for (int y = 0; y < freqBinCount; ++y)
-                {
-                    if (data[x, y] > maxvalue)
-                    {
-                        maxvalue = data[x, y];
-                        maxx = x;
-                        maxy = y;
-                    }
-                }
-            }
-            return maxx;
-        }
-
         private double getMaxXMaxY(System.Numerics.Complex[,] data, out int maxx, out int maxy)
         {
             maxx = 0;
             maxy = 0;
             double maxVal = data[0, 0].Magnitude;
 
-            for (int i = 0; i < data.GetLength(0); i++)
+            for (int i = minRange; i < maxRange; i++)
             {
                 for (int j = 0; j < data.GetLength(1); j++)
                 {

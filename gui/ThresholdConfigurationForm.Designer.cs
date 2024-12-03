@@ -28,30 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            thresholdTypeGroupBox = new GroupBox();
             setThresholdValueButton = new Button();
             thresholdValueTextBox = new TextBox();
-            gocaCFARradioButton = new RadioButton();
-            fixedRadioButton = new RadioButton();
-            thresholdTypeGroupBox.SuspendLayout();
             SuspendLayout();
-            // 
-            // thresholdTypeGroupBox
-            // 
-            thresholdTypeGroupBox.Controls.Add(setThresholdValueButton);
-            thresholdTypeGroupBox.Controls.Add(thresholdValueTextBox);
-            thresholdTypeGroupBox.Controls.Add(gocaCFARradioButton);
-            thresholdTypeGroupBox.Controls.Add(fixedRadioButton);
-            thresholdTypeGroupBox.Location = new Point(12, 12);
-            thresholdTypeGroupBox.Name = "thresholdTypeGroupBox";
-            thresholdTypeGroupBox.Size = new Size(869, 173);
-            thresholdTypeGroupBox.TabIndex = 0;
-            thresholdTypeGroupBox.TabStop = false;
-            thresholdTypeGroupBox.Text = "Type";
             // 
             // setThresholdValueButton
             // 
-            setThresholdValueButton.Location = new Point(335, 40);
+            setThresholdValueButton.Location = new Point(157, 12);
             setThresholdValueButton.Name = "setThresholdValueButton";
             setThresholdValueButton.Size = new Size(94, 29);
             setThresholdValueButton.TabIndex = 3;
@@ -61,51 +44,25 @@
             // 
             // thresholdValueTextBox
             // 
-            thresholdValueTextBox.Location = new Point(190, 41);
+            thresholdValueTextBox.Location = new Point(12, 13);
             thresholdValueTextBox.Name = "thresholdValueTextBox";
             thresholdValueTextBox.Size = new Size(139, 27);
             thresholdValueTextBox.TabIndex = 2;
-            // 
-            // gocaCFARradioButton
-            // 
-            gocaCFARradioButton.AutoSize = true;
-            gocaCFARradioButton.Location = new Point(43, 91);
-            gocaCFARradioButton.Name = "gocaCFARradioButton";
-            gocaCFARradioButton.Size = new Size(108, 24);
-            gocaCFARradioButton.TabIndex = 1;
-            gocaCFARradioButton.TabStop = true;
-            gocaCFARradioButton.Text = "GOCA CFAR";
-            gocaCFARradioButton.UseVisualStyleBackColor = true;
-            // 
-            // fixedRadioButton
-            // 
-            fixedRadioButton.AutoSize = true;
-            fixedRadioButton.Location = new Point(43, 42);
-            fixedRadioButton.Name = "fixedRadioButton";
-            fixedRadioButton.Size = new Size(65, 24);
-            fixedRadioButton.TabIndex = 0;
-            fixedRadioButton.TabStop = true;
-            fixedRadioButton.Text = "Fixed";
-            fixedRadioButton.UseVisualStyleBackColor = true;
             // 
             // ThresholdConfigurationForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(893, 482);
-            Controls.Add(thresholdTypeGroupBox);
+            ClientSize = new Size(357, 67);
+            Controls.Add(setThresholdValueButton);
+            Controls.Add(thresholdValueTextBox);
             Name = "ThresholdConfigurationForm";
             Text = "Threshold configuration";
-            thresholdTypeGroupBox.ResumeLayout(false);
-            thresholdTypeGroupBox.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
-
-        private GroupBox thresholdTypeGroupBox;
-        private RadioButton gocaCFARradioButton;
-        private RadioButton fixedRadioButton;
         private Button setThresholdValueButton;
         private TextBox thresholdValueTextBox;
     }
