@@ -133,7 +133,8 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
         private void Rdk2_OnNewFrame(object sender, ushort[] frame)
         {
-            radarSignalProcessor.feedDopplerFFT(frame);
+            //radarSignalProcessor.feedDopplerFFT(frame);
+            radarSignalProcessor.feedBackground(frame);
             logger.Log(frame);
         }
 

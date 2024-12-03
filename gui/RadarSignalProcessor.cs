@@ -343,5 +343,240 @@ namespace RDK2_Radar_SignalProcessing_GUI
             return values2;
         }
 
+
+        private System.Numerics.Complex[]? filteredBackgroundRx1;
+        private System.Numerics.Complex[]? filteredBackgroundRx2;
+        private System.Numerics.Complex[]? filteredBackgroundRx3;
+
+        public void feedBackground(ushort[] frame)
+        {
+            // Allocate only once (avoid to much reallocation) --> Might be done once in the constructor as well
+            double[] timeBuffer = new double[radarConfiguration.SamplesPerChirp];
+
+            int spectrumLen = (radarConfiguration.SamplesPerChirp / 2) + 1;
+
+            // Store matrix (range FFT per chirp)
+            System.Numerics.Complex[,] rangeFFTMatrix = new System.Numerics.Complex[radarConfiguration.ChirpsPerFrame, spectrumLen];
+
+            // Used to compute DBF and background
+            System.Numerics.Complex[] spectrumAvg0 = new System.Numerics.Complex[spectrumLen];
+            System.Numerics.Complex[] spectrumAvg1 = new System.Numerics.Complex[spectrumLen];
+            System.Numerics.Complex[] spectrumAvg2 = new System.Numerics.Complex[spectrumLen];
+
+            System.Numerics.Complex[,]? dopplerFFTMatrixRx1 = null;
+            System.Numerics.Complex[,]? dopplerFFTMatrixRx2 = null;
+            System.Numerics.Complex[,]? dopplerFFTMatrixRx3 = null;
+
+            double coeff = 0.95;
+            double a = 1 - coeff;
+            double b = coeff;
+
+
+            // Extract per antenna
+            for (int antennaIndex = 0; antennaIndex < radarConfiguration.AntennaCount; antennaIndex++)
+            {
+                // For each chirp within the frame
+                for (int chirpIndex = 0; chirpIndex < radarConfiguration.ChirpsPerFrame; chirpIndex++)
+                {
+                    // Extract time signal of the chirp
+                    int startIndex = chirpIndex * radarConfiguration.AntennaCount * radarConfiguration.SamplesPerChirp;
+                    for (int sampleIndex = 0; sampleIndex < radarConfiguration.SamplesPerChirp; sampleIndex++)
+                    {
+                        int index = startIndex + sampleIndex * radarConfiguration.AntennaCount + antennaIndex;
+                        timeBuffer[sampleIndex] = frame[index];
+                    }
+
+                    // Time buffer now contains the samples of one antenna during a chirp
+                    // Scale between 0 and 1
+                    ArrayUtils.scaleInPlace(timeBuffer, 1.0 / 4096.0);
+
+                    // Compute the average
+                    double average = ArrayUtils.getAverage(timeBuffer);
+
+                    // Offset
+                    ArrayUtils.offsetInPlace(timeBuffer, -average);
+
+                    // Apply windows
+                    window.applyInPlace(timeBuffer);
+
+                    // Compute real FFT
+                    // Size of spectrum is (SamplesPerChirp / 2) + 1
+                    System.Numerics.Complex[] spectrum = FftSharp.FFT.ForwardReal(timeBuffer);
+
+                    if (antennaIndex == 0)
+                    {
+                        if (filteredBackgroundRx1 == null)
+                        {
+                            filteredBackgroundRx1 = new System.Numerics.Complex[spectrum.Length];
+                            for(int i = 0; i <  filteredBackgroundRx1.Length; i++) filteredBackgroundRx1[i] = spectrum[i];
+                        }
+                        else
+                        {
+                            for(int i = 0; i < filteredBackgroundRx1.Length; i++)
+                            {
+                                filteredBackgroundRx1[i] = a * spectrum[i] + b * filteredBackgroundRx1[i];
+                            }
+                        }
+                    }
+                    else if (antennaIndex == 1)
+                    {
+                        if (filteredBackgroundRx2 == null)
+                        {
+                            filteredBackgroundRx2 = new System.Numerics.Complex[spectrum.Length];
+                            for (int i = 0; i < filteredBackgroundRx2.Length; i++) filteredBackgroundRx2[i] = spectrum[i];
+                        }
+                        else
+                        {
+                            for (int i = 0; i < filteredBackgroundRx2.Length; i++)
+                            {
+                                filteredBackgroundRx2[i] = a * spectrum[i] + b * filteredBackgroundRx2[i];
+                            }
+                        }
+                    }
+                    else if (antennaIndex == 2)
+                    {
+                        if (filteredBackgroundRx3 == null)
+                        {
+                            filteredBackgroundRx3 = new System.Numerics.Complex[spectrum.Length];
+                            for (int i = 0; i < filteredBackgroundRx3.Length; i++) filteredBackgroundRx3[i] = spectrum[i];
+                        }
+                        else
+                        {
+                            for (int i = 0; i < filteredBackgroundRx3.Length; i++)
+                            {
+                                filteredBackgroundRx3[i] = a * spectrum[i] + b * filteredBackgroundRx3[i];
+                            }
+                        }
+                    }
+
+                    System.Numerics.Complex[]? background = null;
+                    if (antennaIndex == 0)
+                    {
+                        background = filteredBackgroundRx1;
+                    }
+                    else if (antennaIndex == 1)
+                    {
+                        background = filteredBackgroundRx2;
+                    }
+                    else if (antennaIndex == 2)
+                    {
+                        background = filteredBackgroundRx3;
+                    }
+
+                    // Store it inside the matrix (will be used to compute FFT per bin and the average)
+                    for (int freqIndex = 0; freqIndex < spectrum.Length; freqIndex++)
+                    {
+                        if (background != null)
+                        {
+                            rangeFFTMatrix[chirpIndex, freqIndex] = spectrum[freqIndex] - background[freqIndex];
+                        }
+                        else
+                            rangeFFTMatrix[chirpIndex, freqIndex] = spectrum[freqIndex];
+                    }
+                }
+
+
+                // Send the last chirp samples (formatted)
+                sendFormattedTimeSignalEvent(timeBuffer, antennaIndex);
+
+                // [bin, velocity]
+                System.Numerics.Complex[,] dopplerFFTMatrix =
+                    new System.Numerics.Complex[spectrumLen, radarConfiguration.ChirpsPerFrame];
+
+                double maxAmplitude = double.NaN;
+                int rangeForMaxAmplitude = 0;
+
+                // Compute FFT for each frequency bin over time (chirp repetition time)
+                System.Numerics.Complex[] binContent = new System.Numerics.Complex[radarConfiguration.ChirpsPerFrame];
+                for (int freqIndex = 0; freqIndex < spectrumLen; freqIndex++)
+                {
+                    // Get the content for this frequency bin
+                    for (int chirpIndex = 0; chirpIndex < radarConfiguration.ChirpsPerFrame; chirpIndex++)
+                    {
+                        binContent[chirpIndex] = rangeFFTMatrix[chirpIndex, freqIndex];
+                    }
+
+                    // Compute average and remove it (remove 0 speed)
+                    System.Numerics.Complex avgComplex = ArrayUtils.getAverage(binContent);
+                    ArrayUtils.offsetInPlace(binContent, -avgComplex);
+
+                    // Get FFT (transform in place)
+                    FftSharp.FFT.Forward(binContent);
+
+                    // Get the doppler FFT for the bin
+                    System.Numerics.Complex[] dopplerFFTForBin = FftShift(binContent);
+
+                    // Copy and check for maximum
+                    for (int i = 0; i < dopplerFFTForBin.Length; i++)
+                    {
+                        dopplerFFTMatrix[freqIndex, i] = dopplerFFTForBin[i];
+
+                        double magnitude = dopplerFFTForBin[i].Magnitude;
+                        if (double.IsNaN(maxAmplitude) || (magnitude > maxAmplitude))
+                        {
+                            maxAmplitude = magnitude;
+                            rangeForMaxAmplitude = freqIndex;
+                        }
+                    }
+                }
+
+                // Store
+                if (antennaIndex == 0) dopplerFFTMatrixRx1 = dopplerFFTMatrix;
+                else if (antennaIndex == 1) dopplerFFTMatrixRx2 = dopplerFFTMatrix;
+                else if (antennaIndex == 2) dopplerFFTMatrixRx3 = dopplerFFTMatrix;
+
+                if (antennaIndex == (RadarConfiguration.ANTENNA_COUNT - 1))
+                {
+                    if (dopplerFFTMatrixRx1 == null
+                        || dopplerFFTMatrixRx2 == null
+                        || dopplerFFTMatrixRx3 == null)
+                        return;
+
+                    OnNewDopplerFFTMatrix3?.Invoke(this, dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
+                }
+
+                // Compute spectrum average
+                for (int chirpIndex = 0; chirpIndex < radarConfiguration.ChirpsPerFrame; chirpIndex++)
+                {
+                    for (int freqIndex = 0; freqIndex < spectrumLen; freqIndex++)
+                    {
+                        if (antennaIndex == 0)
+                        {
+                            spectrumAvg0[freqIndex] += rangeFFTMatrix[chirpIndex, freqIndex];
+                        }
+                        else if (antennaIndex == 1)
+                        {
+                            spectrumAvg1[freqIndex] += rangeFFTMatrix[chirpIndex, freqIndex];
+                        }
+                        else if (antennaIndex == 2)
+                        {
+                            spectrumAvg2[freqIndex] += rangeFFTMatrix[chirpIndex, freqIndex];
+                        }
+                    }
+                }
+                for (int freqIndex = 0; freqIndex < spectrumLen; freqIndex++)
+                {
+                    if (antennaIndex == 0)
+                    {
+                        spectrumAvg0[freqIndex] /= radarConfiguration.ChirpsPerFrame;
+                    }
+                    else if (antennaIndex == 1)
+                    {
+                        spectrumAvg1[freqIndex] /= radarConfiguration.ChirpsPerFrame;
+                    }
+                    else if (antennaIndex == 2)
+                    {
+                        spectrumAvg2[freqIndex] /= radarConfiguration.ChirpsPerFrame;
+                    }
+                }
+
+                // Send spectrum as event
+                if (antennaIndex == 0) sendSpectrumEvent(spectrumAvg0, antennaIndex);
+                else if (antennaIndex == 1) sendSpectrumEvent(spectrumAvg1, antennaIndex);
+                else if (antennaIndex == 2) sendSpectrumEvent(spectrumAvg2, antennaIndex);
+
+                OnNewEnergyOverTime?.Invoke(this, maxAmplitude, threshold[antennaIndex], antennaIndex);
+            }
+        }
     }
 }
