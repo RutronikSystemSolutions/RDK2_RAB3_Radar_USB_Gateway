@@ -19,6 +19,12 @@ namespace RDK2_Radar_SignalProcessing_GUI
         /// </summary>
         private System.Numerics.Complex[,] weights;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="beamCount">Standard: 32</param>
+        /// <param name="maxAngleDegree">Standard: 45 (+/-45°)</param>
+        /// <param name="radarLambda">0.5mm for BGT60TR13C</param>
         public DBF(int beamCount, double maxAngleDegree, double radarLambda)
         {
             this.beamCount = beamCount;
