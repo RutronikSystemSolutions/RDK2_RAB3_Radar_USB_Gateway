@@ -52,6 +52,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
         private int[] rangeOfMax;
         private double[] threshold;
         private SignalWindow window;
+        private SignalWindow dopplerWindow;
 
         public RadarSignalProcessor(RadarConfiguration radarConfiguration)
         {
@@ -63,6 +64,8 @@ namespace RDK2_Radar_SignalProcessing_GUI
             threshold = new double[radarConfiguration.AntennaCount];
             dbf = new DBF(32, 45, 0.5);
             window = new SignalWindow(SignalWindow.Type.TypeBlackmanHarris, radarConfiguration.SamplesPerChirp);
+            dopplerWindow = new SignalWindow(SignalWindow.Type.TypeBlackmanHarris,
+                radarConfiguration.ChirpsPerFrame);
 
             for (int i = 0; i < radarConfiguration.AntennaCount; ++i)
             {
@@ -481,6 +484,8 @@ namespace RDK2_Radar_SignalProcessing_GUI
                     // Compute average and remove it (remove 0 speed)
                     //System.Numerics.Complex avgComplex = ArrayUtils.getAverage(binContent);
                     //ArrayUtils.offsetInPlace(binContent, -avgComplex);
+
+                    dopplerWindow.applyInPlaceComplex(binContent);
 
                     // Get FFT (transform in place)
                     FftSharp.FFT.Forward(binContent);

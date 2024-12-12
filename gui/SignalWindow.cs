@@ -67,5 +67,18 @@ namespace RDK2_Radar_SignalProcessing_GUI
                 signal[i] = signal[i] * windowSignal[i];
             }
         }
+
+        public void applyInPlaceComplex(System.Numerics.Complex[] signal)
+        {
+            if (signal.Length != windowSignal.Length)
+            {
+                throw new Exception("Signal must have the same length as window");
+            }
+
+            for (int i = 0; i < signal.Length; ++i)
+            {
+                signal[i] = signal[i] * windowSignal[i];
+            }
+        }
     }
 }
