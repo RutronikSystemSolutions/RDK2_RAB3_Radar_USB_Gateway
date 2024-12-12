@@ -223,6 +223,8 @@ namespace RDK2_Radar_SignalProcessing_GUI
                     System.Numerics.Complex avgComplex = ArrayUtils.getAverage(binContent);
                     ArrayUtils.offsetInPlace(binContent, -avgComplex);
 
+                    dopplerWindow.applyInPlaceComplex(binContent);
+
                     // Get FFT (transform in place)
                     FftSharp.FFT.Forward(binContent);
 

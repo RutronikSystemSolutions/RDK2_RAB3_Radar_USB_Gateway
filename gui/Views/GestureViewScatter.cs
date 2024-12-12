@@ -186,7 +186,8 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             int maxDetectedRange = 0;
 
             // Check for all values above the threshold
-            for (int i = minRange; i < maxRange; i++)
+            //for (int i = minRange; i < maxRange; i++)
+            for (int i = minRange; i < dopplerFFTMatrixRx1.GetLength(0); i++)
             {
                 for (int j = 0; j < dopplerFFTMatrixRx1.GetLength(1); j++)
                 {
@@ -215,6 +216,11 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
                         }
                     }
                 }
+            }
+
+            if (maxDetectedRange < minRange || maxDetectedRange > maxRange)
+            {
+                maxDetectedMag = 0;
             }
 
             if (maxDetectedMag > threshold)

@@ -263,7 +263,7 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             maxDetectedMag = 0;
             maxDetectedRange = 0;
 
-            for (int i = minRange; i < maxRange; i++)
+            for (int i = 0; i < dopplerFFTMatrix.GetLength(0); i++)
             {
                 for (int j = 0; j < dopplerFFTMatrix.GetLength(1); j++)
                 {
@@ -288,6 +288,11 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             int maxDetectedRange = 0;
 
             getMaxAmplitudeRange(dopplerFFTMatrixRx1, out maxDetectedRange, out maxMag);
+
+            if (maxDetectedRange < minRange || maxDetectedRange > maxRange)
+            {
+                maxMag = 0;
+            }
 
             if (maxMag > threshold)
             {
@@ -344,7 +349,7 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             }
 
             timeIndex++;
-            if (hLineSeries.Points.Count > 300)
+            if (hLineSeries.Points.Count > 50)
             {
                 hLineSeries.Points.RemoveAt(0);
                 vLineSeries.Points.RemoveAt(0);
