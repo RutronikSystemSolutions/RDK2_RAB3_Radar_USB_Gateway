@@ -56,9 +56,11 @@
             splitContainer1 = new SplitContainer();
             distanceView = new Views.DistanceView();
             gestureViewScatter = new Views.GestureViewScatter();
+            dbfTabPage = new TabPage();
             mainSplitContainer = new SplitContainer();
             userFeedbackView = new Views.UserFeedbackView();
             logView = new Views.LogView();
+            dbfDopplerView = new Views.DBFDopplerView();
             menuStrip.SuspendLayout();
             statusStrip1.SuspendLayout();
             tabControl.SuspendLayout();
@@ -74,6 +76,7 @@
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
+            dbfTabPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplitContainer).BeginInit();
             mainSplitContainer.Panel1.SuspendLayout();
             mainSplitContainer.Panel2.SuspendLayout();
@@ -127,14 +130,14 @@
             // thresholdToolStripMenuItem
             // 
             thresholdToolStripMenuItem.Name = "thresholdToolStripMenuItem";
-            thresholdToolStripMenuItem.Size = new Size(224, 26);
+            thresholdToolStripMenuItem.Size = new Size(157, 26);
             thresholdToolStripMenuItem.Text = "Threshold";
             thresholdToolStripMenuItem.Click += thresholdToolStripMenuItem_Click;
             // 
             // rangeToolStripMenuItem
             // 
             rangeToolStripMenuItem.Name = "rangeToolStripMenuItem";
-            rangeToolStripMenuItem.Size = new Size(224, 26);
+            rangeToolStripMenuItem.Size = new Size(157, 26);
             rangeToolStripMenuItem.Text = "Range";
             rangeToolStripMenuItem.Click += rangeToolStripMenuItem_Click;
             // 
@@ -214,6 +217,7 @@
             tabControl.Controls.Add(tabPage2);
             tabControl.Controls.Add(gestureTimeTabPage);
             tabControl.Controls.Add(tabPage3);
+            tabControl.Controls.Add(dbfTabPage);
             tabControl.Dock = DockStyle.Fill;
             tabControl.Location = new Point(0, 0);
             tabControl.Name = "tabControl";
@@ -344,6 +348,17 @@
             gestureViewScatter.Size = new Size(300, 400);
             gestureViewScatter.TabIndex = 0;
             // 
+            // dbfTabPage
+            // 
+            dbfTabPage.Controls.Add(dbfDopplerView);
+            dbfTabPage.Location = new Point(4, 29);
+            dbfTabPage.Name = "dbfTabPage";
+            dbfTabPage.Padding = new Padding(3);
+            dbfTabPage.Size = new Size(611, 406);
+            dbfTabPage.TabIndex = 7;
+            dbfTabPage.Text = "DBF";
+            dbfTabPage.UseVisualStyleBackColor = true;
+            // 
             // mainSplitContainer
             // 
             mainSplitContainer.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
@@ -378,6 +393,14 @@
             logView.Size = new Size(314, 209);
             logView.TabIndex = 0;
             // 
+            // dbfDopplerView
+            // 
+            dbfDopplerView.Dock = DockStyle.Fill;
+            dbfDopplerView.Location = new Point(3, 3);
+            dbfDopplerView.Name = "dbfDopplerView";
+            dbfDopplerView.Size = new Size(605, 400);
+            dbfDopplerView.TabIndex = 0;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -411,6 +434,7 @@
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
+            dbfTabPage.ResumeLayout(false);
             mainSplitContainer.Panel1.ResumeLayout(false);
             mainSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)mainSplitContainer).EndInit();
@@ -452,5 +476,7 @@
         private ToolStripStatusLabel handDetectedToolStripStatusLabel;
         private ToolStripMenuItem playbackToolStripMenuItem;
         private Views.UserFeedbackView userFeedbackView;
+        private TabPage dbfTabPage;
+        private Views.DBFDopplerView dbfDopplerView;
     }
 }

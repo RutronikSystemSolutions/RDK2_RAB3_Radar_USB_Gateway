@@ -22,6 +22,9 @@
     <Compile Update="Views\AnglePresenceView.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Views\DBFDopplerView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Views\DBFView.cs">
       <SubType>UserControl</SubType>
     </Compile>

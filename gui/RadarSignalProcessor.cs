@@ -479,8 +479,8 @@ namespace RDK2_Radar_SignalProcessing_GUI
                     }
 
                     // Compute average and remove it (remove 0 speed)
-                    System.Numerics.Complex avgComplex = ArrayUtils.getAverage(binContent);
-                    ArrayUtils.offsetInPlace(binContent, -avgComplex);
+                    //System.Numerics.Complex avgComplex = ArrayUtils.getAverage(binContent);
+                    //ArrayUtils.offsetInPlace(binContent, -avgComplex);
 
                     // Get FFT (transform in place)
                     FftSharp.FFT.Forward(binContent);

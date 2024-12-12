@@ -96,6 +96,8 @@ namespace RDK2_Radar_SignalProcessing_GUI
             //gestureDetector.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
             clickDetector.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
             userFeedbackView.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
+
+            dbfDopplerView.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
         }
 
         private void Rdk2_OnNewConnectionState(object sender, RDK2.ConnectionState state)
@@ -134,8 +136,8 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
         private void Rdk2_OnNewFrame(object sender, ushort[] frame)
         {
-            radarSignalProcessor.feedDopplerFFT(frame);
-            //radarSignalProcessor.feedBackground(frame);
+            //radarSignalProcessor.feedDopplerFFT(frame);
+            radarSignalProcessor.feedBackground(frame);
             logger.Log(frame);
         }
 
@@ -167,6 +169,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
             gestureViewScatter.SetRange(minRange, maxRange);
             userFeedbackView.SetRange(minRange, maxRange);
             gestureViewTime.SetRange(minRange, maxRange);
+            dbfDopplerView.SetRange(minRange, maxRange);
         }
 
         /// <summary>
@@ -199,6 +202,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
                 distanceView.SetThreshold(form.threshold);
                 gestureViewScatter.SetThreshold(form.threshold);
                 userFeedbackView.SetThreshold(form.threshold);
+                dbfDopplerView.SetThreshold(form.threshold);
             }
         }
 
@@ -220,6 +224,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
                 gestureViewScatter.SetRange(form.minRange, form.maxRange);
                 userFeedbackView.SetRange(form.minRange, form.maxRange);
                 gestureViewTime.SetRange(form.minRange, form.maxRange);
+                dbfDopplerView.SetRange(form.minRange, form.maxRange);
             }
         }
 
