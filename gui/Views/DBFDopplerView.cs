@@ -349,7 +349,7 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             }
 
             timeIndex++;
-            if (hLineSeries.Points.Count > 50)
+            if (hLineSeries.Points.Count > 120)
             {
                 hLineSeries.Points.RemoveAt(0);
                 vLineSeries.Points.RemoveAt(0);

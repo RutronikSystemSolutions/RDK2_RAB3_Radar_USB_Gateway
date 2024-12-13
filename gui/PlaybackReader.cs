@@ -66,6 +66,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
             BackgroundWorker worker = (BackgroundWorker)sender;
 
+            bool firstLine = true;
             const Int32 BufferSize = 128;
             using (var fileStream = File.OpenRead(path))
             using (var streamReader = new StreamReader(fileStream, Encoding.UTF8, true, BufferSize))
@@ -73,6 +74,11 @@ namespace RDK2_Radar_SignalProcessing_GUI
                 String? line;
                 while ((line = streamReader.ReadLine()) != null)
                 {
+                    if (firstLine)
+                    {
+                        firstLine = false;
+                        continue;
+                    }
                     // Process line
                     string[] content = line.Split(';');
                     if (content.Length == 0) return;

@@ -115,6 +115,15 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
             TextWriter writer = new StreamWriter(this.path);
 
+            // First, store the configuration
+            writer.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};", 
+                RadarConfiguration.SAMPLES_PER_CHIRP,
+                RadarConfiguration.CHIRPS_PER_FRAME,
+                RadarConfiguration.ANTENNA_COUNT,
+                RadarConfiguration.SAMPLING_RATE,
+                RadarConfiguration.START_FREQUENCY,
+                RadarConfiguration.END_FREQUENCY));
+
             for(; ;)
             {
                 if (worker.CancellationPending)

@@ -13,7 +13,8 @@ namespace RDK2_Radar_SignalProcessing_GUI
         public static double SAMPLING_RATE = 2000000;
 
         public static int SAMPLES_PER_CHIRP = 32;
-        public static int CHIRPS_PER_FRAME = 64;
+        public static int CHIRPS_PER_FRAME = 32;
+        //public static int CHIRPS_PER_FRAME = 64;
         public static int ANTENNA_COUNT = 3;
 
         private double startFrequency = START_FREQUENCY;
