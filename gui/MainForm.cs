@@ -16,12 +16,15 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
         private GestureDetector gestureDetector = new GestureDetector();
         private ClickDetector clickDetector = new ClickDetector();
+        private DataCollector dataCollector = new DataCollector();
 
         private RDK2 rdk2 = new RDK2();
 
         private DataLogger logger = new DataLogger();
 
         private PlaybackReader playbackReader = new PlaybackReader();
+
+        private DatasetAnalyser datasetAnalyser = new DatasetAnalyser();
 
         public MainForm()
         {
@@ -42,6 +45,24 @@ namespace RDK2_Radar_SignalProcessing_GUI
             logger.OnNewLoggerState += Logger_OnNewLoggerState;
 
             playbackReader.OnNewFrameEvent += Rdk2_OnNewFrame;
+
+            dataCollector.OnNewDatasetAvailable += DataCollector_OnNewDatasetAvailable;
+
+            datasetAnalyser.OnNewActionDetected += DatasetAnalyser_OnNewActionDetected;
+
+            KeyPreview = true;
+        }
+
+        private void DatasetAnalyser_OnNewActionDetected(object sender, int action)
+        {
+            System.Media.SystemSounds.Asterisk.Play();
+            userFeedbackView.SignalClick(action);
+        }
+
+        private void DataCollector_OnNewDatasetAvailable(object sender, List<DataCollector.DataSet> dataset)
+        {
+            // A new data-set is available, have a look to it
+            datasetAnalyser.Analyse(dataset);
         }
 
         private void ClickDetector_OnReadyForNextAction(object sender, bool status)
@@ -87,17 +108,17 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
         private void RadarSignalProcessor_OnNewDopplerFFTMatrix3(object sender, System.Numerics.Complex[,] dopplerFFTMatrixRx1, System.Numerics.Complex[,] dopplerFFTMatrixRx2, System.Numerics.Complex[,] dopplerFFTMatrixRx3)
         {
-            // Let's go! -> compute angle and display max
-            //gestureView.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
+            // Let's go! -> compute angle and display max            
             gestureViewScatter.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
             gestureViewTime.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
             distanceView.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
 
-            //gestureDetector.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
-            clickDetector.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
+            // clickDetector.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
             userFeedbackView.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
 
             dbfDopplerView.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
+
+            dataCollector.Feed(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
         }
 
         private void Rdk2_OnNewConnectionState(object sender, RDK2.ConnectionState state)
@@ -252,6 +273,15 @@ namespace RDK2_Radar_SignalProcessing_GUI
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 playbackReader.Start(dialog.FileName);
+            }
+        }
+
+        private void MainForm_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 17)
+            {
+                // CTRL + Q
+                logger.Stop();
             }
         }
     }

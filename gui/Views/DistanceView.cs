@@ -15,6 +15,8 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 {
     public partial class DistanceView : UserControl
     {
+        private const int MAX_VALUES = 300;
+
         private double threshold = 0.1;
         private double index = 0;
         private int minRange = 0;
@@ -195,7 +197,7 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             index += 1;
 
             // Keep the last 4 seconds
-            if (distanceLineSerieRx1.Points.Count > (30 * 4))
+            if (distanceLineSerieRx1.Points.Count > MAX_VALUES)
             {
                 distanceLineSerieRx1.Points.RemoveAt(0);
                 //distanceLineSerieRx2.Points.RemoveAt(0);

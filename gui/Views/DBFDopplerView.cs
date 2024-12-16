@@ -15,6 +15,7 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 {
     public partial class DBFDopplerView : UserControl
     {
+        private const int MAX_VALUES = 300;
         private double threshold = 0.1;
         private int minRange = 0;
         private int maxRange = (RadarConfiguration.SAMPLES_PER_CHIRP / 2) + 1;
@@ -349,7 +350,7 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             }
 
             timeIndex++;
-            if (hLineSeries.Points.Count > 120)
+            if (hLineSeries.Points.Count > MAX_VALUES)
             {
                 hLineSeries.Points.RemoveAt(0);
                 vLineSeries.Points.RemoveAt(0);
