@@ -4,6 +4,7 @@ using System.IO.Ports;
 using OxyPlot.Series;
 using OxyPlot.WindowsForms;
 using System.Windows.Forms;
+using Microsoft.ML.OnnxRuntime;
 
 namespace RDK2_Radar_SignalProcessing_GUI
 {
@@ -25,6 +26,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
         private PlaybackReader playbackReader = new PlaybackReader();
 
         private DatasetAnalyser datasetAnalyser = new DatasetAnalyser();
+        private DatasetAnalyserNN datasetAnalyserNN = new DatasetAnalyserNN(".\\model.onnx");
 
         public MainForm()
         {
@@ -50,7 +52,14 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
             datasetAnalyser.OnNewActionDetected += DatasetAnalyser_OnNewActionDetected;
 
+            datasetAnalyserNN.OnInferenceResult += DatasetAnalyserNN_OnInferenceResult;
+
             KeyPreview = true;
+        }
+
+        private void DatasetAnalyserNN_OnInferenceResult(object sender, float[] result)
+        {
+            nnOutputView.Update(result);
         }
 
         private void DatasetAnalyser_OnNewActionDetected(object sender, int action)
@@ -63,6 +72,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
         {
             // A new data-set is available, have a look to it
             datasetAnalyser.Analyse(dataset);
+            datasetAnalyserNN.Analyse(dataset);
         }
 
         private void ClickDetector_OnReadyForNextAction(object sender, bool status)

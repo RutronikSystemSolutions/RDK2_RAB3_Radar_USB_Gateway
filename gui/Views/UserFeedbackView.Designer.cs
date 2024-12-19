@@ -45,15 +45,15 @@
             // 
             verticalProgressBar.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
             verticalProgressBar.BorderStyle = BorderStyle.FixedSingle;
-            verticalProgressBar.Location = new Point(256, 3);
+            verticalProgressBar.Location = new Point(190, 3);
             verticalProgressBar.Name = "verticalProgressBar";
-            verticalProgressBar.Size = new Size(78, 217);
+            verticalProgressBar.Size = new Size(78, 215);
             verticalProgressBar.TabIndex = 3;
             // 
             // leftMovePanel
             // 
             leftMovePanel.BorderStyle = BorderStyle.FixedSingle;
-            leftMovePanel.Location = new Point(31, 91);
+            leftMovePanel.Location = new Point(3, 35);
             leftMovePanel.Name = "leftMovePanel";
             leftMovePanel.Size = new Size(57, 50);
             leftMovePanel.TabIndex = 5;
@@ -61,7 +61,7 @@
             // clickPanel
             // 
             clickPanel.BorderStyle = BorderStyle.FixedSingle;
-            clickPanel.Location = new Point(94, 91);
+            clickPanel.Location = new Point(66, 35);
             clickPanel.Name = "clickPanel";
             clickPanel.Size = new Size(57, 50);
             clickPanel.TabIndex = 6;
@@ -69,14 +69,14 @@
             // rightMovePanel
             // 
             rightMovePanel.BorderStyle = BorderStyle.FixedSingle;
-            rightMovePanel.Location = new Point(157, 91);
+            rightMovePanel.Location = new Point(129, 35);
             rightMovePanel.Name = "rightMovePanel";
             rightMovePanel.Size = new Size(57, 50);
             rightMovePanel.TabIndex = 6;
             // 
             // readyForNewMovePanel
             // 
-            readyForNewMovePanel.Location = new Point(31, 59);
+            readyForNewMovePanel.Location = new Point(3, 3);
             readyForNewMovePanel.Name = "readyForNewMovePanel";
             readyForNewMovePanel.Size = new Size(183, 26);
             readyForNewMovePanel.TabIndex = 7;
@@ -85,13 +85,14 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            BorderStyle = BorderStyle.FixedSingle;
             Controls.Add(readyForNewMovePanel);
             Controls.Add(rightMovePanel);
             Controls.Add(clickPanel);
             Controls.Add(leftMovePanel);
             Controls.Add(verticalProgressBar);
             Name = "UserFeedbackView";
-            Size = new Size(337, 223);
+            Size = new Size(271, 221);
             ResumeLayout(false);
         }
 

@@ -49,6 +49,9 @@
     <Compile Update="Views\LogView.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Views\NNOutputView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Views\RangeFFTView.cs">
       <SubType>UserControl</SubType>
     </Compile>

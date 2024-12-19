@@ -88,10 +88,16 @@ namespace RDK2_Radar_SignalProcessing_GUI
                 // Too much? -> avoid overflow
                 if (collectedData.Count > MaxCount)
                 {
-                    System.Diagnostics.Debug.WriteLine("Too much data... " + collectedData.Count.ToString());
+                    // Nothing to do, already too much
                 }
                 else
                 {
+                    if (collectedData.Count == MaxCount)
+                    {
+                        // TODO - generate event?
+                        System.Diagnostics.Debug.WriteLine("Already collected enough data... " + collectedData.Count.ToString());
+                    }
+
                     collectedData.Add(new DataSet(dopplerFFTRx1, dopplerFFTRx2, dopplerFFTRx3));
                 }
             }
