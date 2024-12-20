@@ -27,7 +27,7 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
         private int rightMove = 0;
         private int readyForNew = 0;
 
-        private const int ACTION_RESET = 50;
+        private const int ACTION_RESET = 5;
 
         public UserFeedbackView()
         {
