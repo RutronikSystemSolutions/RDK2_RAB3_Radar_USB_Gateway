@@ -15,6 +15,8 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 {
     public partial class TimeSignalView : UserControl
     {
+        private object sync = new object();
+
         /// <summary>
         /// X Axis
         /// </summary>
@@ -54,10 +56,24 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
         private LineSeries timeSignalAntenna1LineSeries = new LineSeries();
         private LineSeries timeSignalAntenna2LineSeries = new LineSeries();
 
+        private System.Timers.Timer timer = new System.Timers.Timer();
+
         public TimeSignalView()
         {
             InitializeComponent();
             InitPlot();
+
+            timer.Interval = 100;
+            timer.Elapsed += Timer_Elapsed;
+            timer.Start();
+        }
+
+        private void Timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+        {
+            lock(sync)
+            {
+                plotView.InvalidatePlot(true);
+            }
         }
 
         private void InitPlot()
@@ -93,30 +109,32 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 
         public void updateData(double[] signal, int antennaIndex)
         {
-            if (antennaIndex == 0)
+            lock (sync)
             {
-                timeSignalAntenna0LineSeries.Points.Clear();
-                for (int i = 0; i < signal.Length; ++i)
+                if (antennaIndex == 0)
                 {
-                    timeSignalAntenna0LineSeries.Points.Add(new DataPoint(i, signal[i]));
+                    timeSignalAntenna0LineSeries.Points.Clear();
+                    for (int i = 0; i < signal.Length; ++i)
+                    {
+                        timeSignalAntenna0LineSeries.Points.Add(new DataPoint(i, signal[i]));
+                    }
                 }
-            }
-            else if (antennaIndex == 1)
-            {
-                timeSignalAntenna1LineSeries.Points.Clear();
-                for (int i = 0; i < signal.Length; ++i)
+                else if (antennaIndex == 1)
                 {
-                    timeSignalAntenna1LineSeries.Points.Add(new DataPoint(i, signal[i]));
+                    timeSignalAntenna1LineSeries.Points.Clear();
+                    for (int i = 0; i < signal.Length; ++i)
+                    {
+                        timeSignalAntenna1LineSeries.Points.Add(new DataPoint(i, signal[i]));
+                    }
                 }
-            }
-            else if (antennaIndex == 2)
-            {
-                timeSignalAntenna2LineSeries.Points.Clear();
-                for (int i = 0; i < signal.Length; ++i)
+                else if (antennaIndex == 2)
                 {
-                    timeSignalAntenna2LineSeries.Points.Add(new DataPoint(i, signal[i]));
+                    timeSignalAntenna2LineSeries.Points.Clear();
+                    for (int i = 0; i < signal.Length; ++i)
+                    {
+                        timeSignalAntenna2LineSeries.Points.Add(new DataPoint(i, signal[i]));
+                    }
                 }
-                plotView.InvalidatePlot(true);
             }
         }
     }

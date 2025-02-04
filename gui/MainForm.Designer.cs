@@ -50,8 +50,6 @@
             timeSignalView = new Views.TimeSignalView();
             tabPage2 = new TabPage();
             energyOverTimeView = new Views.EnergyOverTimeView();
-            gestureTimeTabPage = new TabPage();
-            gestureViewTime = new Views.GestureViewTime();
             tabPage3 = new TabPage();
             splitContainer2 = new SplitContainer();
             splitContainer1 = new SplitContainer();
@@ -59,9 +57,9 @@
             gestureViewScatter = new Views.GestureViewScatter();
             dbfDopplerView = new Views.DBFDopplerView();
             mainSplitContainer = new SplitContainer();
+            nnOutputView = new Views.NNOutputView();
             userFeedbackView = new Views.UserFeedbackView();
             logView = new Views.LogView();
-            nnOutputView = new Views.NNOutputView();
             menuStrip.SuspendLayout();
             statusStrip1.SuspendLayout();
             tabControl.SuspendLayout();
@@ -71,7 +69,6 @@
             rawSignalSplitContainer.Panel2.SuspendLayout();
             rawSignalSplitContainer.SuspendLayout();
             tabPage2.SuspendLayout();
-            gestureTimeTabPage.SuspendLayout();
             tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer2).BeginInit();
             splitContainer2.Panel1.SuspendLayout();
@@ -220,7 +217,6 @@
             // 
             tabControl.Controls.Add(tabPage1);
             tabControl.Controls.Add(tabPage2);
-            tabControl.Controls.Add(gestureTimeTabPage);
             tabControl.Controls.Add(tabPage3);
             tabControl.Dock = DockStyle.Fill;
             tabControl.Location = new Point(0, 0);
@@ -286,26 +282,6 @@
             energyOverTimeView.Name = "energyOverTimeView";
             energyOverTimeView.Size = new Size(604, 400);
             energyOverTimeView.TabIndex = 14;
-            // 
-            // gestureTimeTabPage
-            // 
-            gestureTimeTabPage.Controls.Add(gestureViewTime);
-            gestureTimeTabPage.Location = new Point(4, 29);
-            gestureTimeTabPage.Name = "gestureTimeTabPage";
-            gestureTimeTabPage.Padding = new Padding(3);
-            gestureTimeTabPage.Size = new Size(610, 406);
-            gestureTimeTabPage.TabIndex = 5;
-            gestureTimeTabPage.Text = "Gesture Time";
-            gestureTimeTabPage.UseVisualStyleBackColor = true;
-            // 
-            // gestureViewTime
-            // 
-            gestureViewTime.BorderStyle = BorderStyle.FixedSingle;
-            gestureViewTime.Dock = DockStyle.Fill;
-            gestureViewTime.Location = new Point(3, 3);
-            gestureViewTime.Name = "gestureViewTime";
-            gestureViewTime.Size = new Size(604, 400);
-            gestureViewTime.TabIndex = 0;
             // 
             // tabPage3
             // 
@@ -400,13 +376,22 @@
             mainSplitContainer.SplitterWidth = 5;
             mainSplitContainer.TabIndex = 14;
             // 
+            // nnOutputView
+            // 
+            nnOutputView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            nnOutputView.BorderStyle = BorderStyle.FixedSingle;
+            nnOutputView.Location = new Point(3, 115);
+            nnOutputView.Name = "nnOutputView";
+            nnOutputView.Size = new Size(304, 185);
+            nnOutputView.TabIndex = 2;
+            // 
             // userFeedbackView
             // 
             userFeedbackView.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             userFeedbackView.BorderStyle = BorderStyle.FixedSingle;
             userFeedbackView.Location = new Point(3, 3);
             userFeedbackView.Name = "userFeedbackView";
-            userFeedbackView.Size = new Size(307, 106);
+            userFeedbackView.Size = new Size(304, 106);
             userFeedbackView.TabIndex = 1;
             // 
             // logView
@@ -414,17 +399,8 @@
             logView.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             logView.Location = new Point(0, 306);
             logView.Name = "logView";
-            logView.Size = new Size(312, 132);
+            logView.Size = new Size(309, 132);
             logView.TabIndex = 0;
-            // 
-            // nnOutputView
-            // 
-            nnOutputView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            nnOutputView.BorderStyle = BorderStyle.FixedSingle;
-            nnOutputView.Location = new Point(3, 115);
-            nnOutputView.Name = "nnOutputView";
-            nnOutputView.Size = new Size(307, 185);
-            nnOutputView.TabIndex = 2;
             // 
             // MainForm
             // 
@@ -440,7 +416,7 @@
             Controls.Add(menuStrip);
             MainMenuStrip = menuStrip;
             Name = "MainForm";
-            Text = "RDK2 - Radar - Signal Processing - v1.0";
+            Text = "RDK2 - Radar - Signal Processing - v3.0";
             Load += MainForm_Load;
             KeyPress += MainForm_KeyPress;
             menuStrip.ResumeLayout(false);
@@ -454,7 +430,6 @@
             ((System.ComponentModel.ISupportInitialize)rawSignalSplitContainer).EndInit();
             rawSignalSplitContainer.ResumeLayout(false);
             tabPage2.ResumeLayout(false);
-            gestureTimeTabPage.ResumeLayout(false);
             tabPage3.ResumeLayout(false);
             splitContainer2.Panel1.ResumeLayout(false);
             splitContainer2.Panel2.ResumeLayout(false);
@@ -494,8 +469,6 @@
         private SplitContainer rawSignalSplitContainer;
         private Views.TimeSignalView timeSignalView;
         private Views.EnergyOverTimeView energyOverTimeView;
-        private TabPage gestureTimeTabPage;
-        private Views.GestureViewTime gestureViewTime;
         private Views.GestureViewScatter gestureViewScatter;
         private TabPage tabPage3;
         private Views.DistanceView distanceView;

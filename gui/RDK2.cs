@@ -62,7 +62,8 @@ namespace RDK2_Radar_SignalProcessing_GUI
             {
                 port = new SerialPort
                 {
-                    BaudRate = 921600,
+                    //BaudRate = 921600,
+                    BaudRate = 1000000,
                     DataBits = 8,
                     Handshake = Handshake.None,
                     Parity = Parity.None,
@@ -115,29 +116,48 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
             byte[] readBuffer = new byte[bytesPerFrame];
 
-            int offset = 0;
-            int remaining = bytesPerFrame;
 
-            var watch = System.Diagnostics.Stopwatch.StartNew();
 
-            for (; ;)
+            // var watch = System.Diagnostics.Stopwatch.StartNew();
+
+            for (; ; )
             {
-                int available = port.BytesToRead;
-                if (available > 0)
-                {
-                    if (remaining == bytesPerFrame)
-                    {
-                        watch.Restart();
-                    }
-                    int toRead = (available > remaining) ? remaining: available;
-                    port.Read(readBuffer, offset, toRead);
 
-                    offset += toRead;
-                    remaining -= toRead;
+                for (; ; )
+                {
+                    int available = port.BytesToRead;
+                    if (available > 0) break;
+                    System.Threading.Thread.Sleep(10);
                 }
 
-                if (remaining == 0)
+                for (; ; )
                 {
+                    int offset = 0;
+                    int remaining = bytesPerFrame;
+                    bool gotTimeout = false;
+
+                    for (; ; )
+                    {
+                        int readSize = 0;
+                        try
+                        {
+                            readSize = port.Read(readBuffer, offset, remaining);
+                        }
+                        catch (System.TimeoutException)
+                        {
+                            gotTimeout = true;
+                            break;
+                        }
+                        offset += readSize;
+                        remaining -= readSize;
+                        if (remaining == 0) break;
+                    }
+
+                    if (gotTimeout)
+                    {
+                        break;
+                    }
+
                     // Frame is available
                     var samples = new ushort[samplesPerFrame];
                     for (int i = 0; i < samplesPerFrame; i++)
@@ -145,21 +165,10 @@ namespace RDK2_Radar_SignalProcessing_GUI
                         samples[i] = BitConverter.ToUInt16(readBuffer, i * 2);
                     }
 
+
+
                     worker.ReportProgress(WorkerReportFrame, samples);
-
-                    offset = 0;
-                    remaining = bytesPerFrame;
                 }
-
-                if ((watch.Elapsed.TotalMilliseconds > 500) && (offset != 0))
-                {
-                    // Problem...
-                    System.Diagnostics.Debug.WriteLine("Timeout 500,s");
-                    offset = 0;
-                    remaining = bytesPerFrame;
-                }
-
-                System.Threading.Thread.Sleep(1);
             }
         }
 

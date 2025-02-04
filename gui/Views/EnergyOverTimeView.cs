@@ -17,6 +17,8 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
     {
         private double threshold = 0.1;
 
+        private object sync = new object();
+
         /// <summary>
         /// X Axis
         /// </summary>
@@ -57,10 +59,24 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 
         private double timeIndex = 0;
 
+        private System.Timers.Timer timer = new System.Timers.Timer();
+
         public EnergyOverTimeView()
         {
             InitializeComponent();
             InitPlot();
+
+            timer.Interval = 50;
+            timer.Elapsed += Timer_Elapsed;
+            timer.Start();
+        }
+
+        private void Timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+        {
+            lock (sync)
+            {
+                plotView.InvalidatePlot(true);
+            }
         }
 
         private void InitPlot()
@@ -104,27 +120,29 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 
         public void updateData(double energy, int antennaIndex)
         {
-            if (antennaIndex == 0)
+            lock (sync)
             {
-                energyOverTimeAntenna0LineSeries.Points.Add(new DataPoint(timeIndex, energy));
-                dynamicThresholdLineSeries.Points.Add(new DataPoint(timeIndex, threshold));
-                if (energyOverTimeAntenna0LineSeries.Points.Count > 100)
+                if (antennaIndex == 0)
                 {
-                    energyOverTimeAntenna0LineSeries.Points.RemoveAt(0);
-                    dynamicThresholdLineSeries.Points.RemoveAt(0);
+                    energyOverTimeAntenna0LineSeries.Points.Add(new DataPoint(timeIndex, energy));
+                    dynamicThresholdLineSeries.Points.Add(new DataPoint(timeIndex, threshold));
+                    if (energyOverTimeAntenna0LineSeries.Points.Count > 100)
+                    {
+                        energyOverTimeAntenna0LineSeries.Points.RemoveAt(0);
+                        dynamicThresholdLineSeries.Points.RemoveAt(0);
+                    }
                 }
-            }
-            else if (antennaIndex == 1)
-            {
-                energyOverTimeAntenna1LineSeries.Points.Add(new DataPoint(timeIndex, energy));
-                if (energyOverTimeAntenna1LineSeries.Points.Count > 100) energyOverTimeAntenna1LineSeries.Points.RemoveAt(0);
-            }
-            else if (antennaIndex == 2)
-            {
-                energyOverTimeAntenna2LineSeries.Points.Add(new DataPoint(timeIndex, energy));
-                if (energyOverTimeAntenna2LineSeries.Points.Count > 100) energyOverTimeAntenna2LineSeries.Points.RemoveAt(0);
-                timeIndex += 1;
-                plotView.InvalidatePlot(true);
+                else if (antennaIndex == 1)
+                {
+                    energyOverTimeAntenna1LineSeries.Points.Add(new DataPoint(timeIndex, energy));
+                    if (energyOverTimeAntenna1LineSeries.Points.Count > 100) energyOverTimeAntenna1LineSeries.Points.RemoveAt(0);
+                }
+                else if (antennaIndex == 2)
+                {
+                    energyOverTimeAntenna2LineSeries.Points.Add(new DataPoint(timeIndex, energy));
+                    if (energyOverTimeAntenna2LineSeries.Points.Count > 100) energyOverTimeAntenna2LineSeries.Points.RemoveAt(0);
+                    timeIndex += 1;
+                }
             }
         }
     }

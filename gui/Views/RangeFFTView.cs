@@ -15,6 +15,8 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
 {
     public partial class RangeFFTView : UserControl
     {
+        private object sync = new object();
+
         private double startFrequency = RadarConfiguration.START_FREQUENCY;
         private double endFrequency = RadarConfiguration.END_FREQUENCY;
         private double samplingRate = RadarConfiguration.SAMPLING_RATE;
@@ -59,10 +61,24 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
         private LineSeries spectrumAntenna1LineSeries = new LineSeries();
         private LineSeries spectrumAntenna2LineSeries = new LineSeries();
 
+        private System.Timers.Timer timer = new System.Timers.Timer();
+
         public RangeFFTView()
         {
             InitializeComponent();
             InitPlot();
+
+            timer.Interval = 100;
+            timer.Elapsed += Timer_Elapsed;
+            timer.Start();
+        }
+
+        private void Timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+        {
+            lock (sync)
+            {
+                plotView.InvalidatePlot(true);
+            }
         }
 
         public void setSpectrumDBFS(double[] spectrum, int antennaIndex)
@@ -72,39 +88,41 @@ namespace RDK2_Radar_SignalProcessing_GUI.Views
             double fftLen = spectrum.Length;
             double slope = bandWidth / (samplesPerChirp * (1 / samplingRate));
 
-            if (antennaIndex == 0)
+            lock (sync)
             {
-                spectrumAntenna0LineSeries.Points.Clear();
-                for (int i = 0; i < spectrum.Length; ++i)
+                if (antennaIndex == 0)
                 {
-                    double fractionFs = i / ((fftLen - 1) * 2);
-                    double freq = fractionFs * samplingRate;
-                    double rangeMeters = (celerity * freq) / (2 * slope);
-                    spectrumAntenna0LineSeries.Points.Add(new DataPoint(rangeMeters, spectrum[i]));
+                    spectrumAntenna0LineSeries.Points.Clear();
+                    for (int i = 0; i < spectrum.Length; ++i)
+                    {
+                        double fractionFs = i / ((fftLen - 1) * 2);
+                        double freq = fractionFs * samplingRate;
+                        double rangeMeters = (celerity * freq) / (2 * slope);
+                        spectrumAntenna0LineSeries.Points.Add(new DataPoint(rangeMeters, spectrum[i]));
+                    }
                 }
-            }
-            else if (antennaIndex == 1)
-            {
-                spectrumAntenna1LineSeries.Points.Clear();
-                for (int i = 0; i < spectrum.Length; ++i)
+                else if (antennaIndex == 1)
                 {
-                    double fractionFs = i / ((fftLen - 1) * 2);
-                    double freq = fractionFs * samplingRate;
-                    double rangeMeters = (celerity * freq) / (2 * slope);
-                    spectrumAntenna1LineSeries.Points.Add(new DataPoint(rangeMeters, spectrum[i]));
+                    spectrumAntenna1LineSeries.Points.Clear();
+                    for (int i = 0; i < spectrum.Length; ++i)
+                    {
+                        double fractionFs = i / ((fftLen - 1) * 2);
+                        double freq = fractionFs * samplingRate;
+                        double rangeMeters = (celerity * freq) / (2 * slope);
+                        spectrumAntenna1LineSeries.Points.Add(new DataPoint(rangeMeters, spectrum[i]));
+                    }
                 }
-            }
-            else if (antennaIndex == 2)
-            {
-                spectrumAntenna2LineSeries.Points.Clear();
-                for (int i = 0; i < spectrum.Length; ++i)
+                else if (antennaIndex == 2)
                 {
-                    double fractionFs = i / ((fftLen - 1) * 2);
-                    double freq = fractionFs * samplingRate;
-                    double rangeMeters = (celerity * freq) / (2 * slope);
-                    spectrumAntenna2LineSeries.Points.Add(new DataPoint(rangeMeters, spectrum[i]));
+                    spectrumAntenna2LineSeries.Points.Clear();
+                    for (int i = 0; i < spectrum.Length; ++i)
+                    {
+                        double fractionFs = i / ((fftLen - 1) * 2);
+                        double freq = fractionFs * samplingRate;
+                        double rangeMeters = (celerity * freq) / (2 * slope);
+                        spectrumAntenna2LineSeries.Points.Add(new DataPoint(rangeMeters, spectrum[i]));
+                    }
                 }
-                plotView.InvalidatePlot(true);
             }
         }
 

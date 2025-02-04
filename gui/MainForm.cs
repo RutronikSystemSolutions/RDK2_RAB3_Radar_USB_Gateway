@@ -120,7 +120,6 @@ namespace RDK2_Radar_SignalProcessing_GUI
         {
             // Let's go! -> compute angle and display max            
             gestureViewScatter.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
-            gestureViewTime.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
             distanceView.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
 
             // clickDetector.UpdateData(dopplerFFTMatrixRx1, dopplerFFTMatrixRx2, dopplerFFTMatrixRx3);
@@ -199,7 +198,6 @@ namespace RDK2_Radar_SignalProcessing_GUI
             distanceView.SetRange(minRange, maxRange);
             gestureViewScatter.SetRange(minRange, maxRange);
             userFeedbackView.SetRange(minRange, maxRange);
-            gestureViewTime.SetRange(minRange, maxRange);
             dbfDopplerView.SetRange(minRange, maxRange);
         }
 
@@ -229,7 +227,6 @@ namespace RDK2_Radar_SignalProcessing_GUI
                 // Set threshold everywhere
                 clickDetector.SetThreshold(form.threshold);
                 energyOverTimeView.SetThreshold(form.threshold);
-                gestureViewTime.SetThreshold(form.threshold);
                 distanceView.SetThreshold(form.threshold);
                 gestureViewScatter.SetThreshold(form.threshold);
                 userFeedbackView.SetThreshold(form.threshold);
@@ -254,7 +251,6 @@ namespace RDK2_Radar_SignalProcessing_GUI
                 distanceView.SetRange(form.minRange, form.maxRange);
                 gestureViewScatter.SetRange(form.minRange, form.maxRange);
                 userFeedbackView.SetRange(form.minRange, form.maxRange);
-                gestureViewTime.SetRange(form.minRange, form.maxRange);
                 dbfDopplerView.SetRange(form.minRange, form.maxRange);
             }
         }
