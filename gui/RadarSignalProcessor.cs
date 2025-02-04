@@ -54,6 +54,18 @@ namespace RDK2_Radar_SignalProcessing_GUI
         private SignalWindow window;
         private SignalWindow dopplerWindow;
 
+
+        // Allocate only once (avoid to much reallocation) --> Might be done once in the constructor as well
+        double[] timeBuffer;
+
+        // Store matrix (range FFT per chirp)
+        System.Numerics.Complex[,] rangeFFTMatrix;
+
+        // Used to compute DBF and background
+        System.Numerics.Complex[] spectrumAvg0;
+        System.Numerics.Complex[] spectrumAvg1;
+        System.Numerics.Complex[] spectrumAvg2;
+
         public RadarSignalProcessor(RadarConfiguration radarConfiguration)
         {
             this.radarConfiguration = radarConfiguration;
@@ -74,6 +86,18 @@ namespace RDK2_Radar_SignalProcessing_GUI
                 somethingDetected[i] = false;
                 threshold[i] = 0.1;
             }
+
+            timeBuffer = new double[radarConfiguration.SamplesPerChirp];
+
+            int spectrumLen = (radarConfiguration.SamplesPerChirp / 2) + 1;
+
+            // Store matrix (range FFT per chirp)
+            rangeFFTMatrix = new System.Numerics.Complex[radarConfiguration.ChirpsPerFrame, spectrumLen];
+
+            // Used to compute DBF and background
+            spectrumAvg0 = new System.Numerics.Complex[spectrumLen];
+            spectrumAvg1 = new System.Numerics.Complex[spectrumLen];
+            spectrumAvg2 = new System.Numerics.Complex[spectrumLen];
         }
 
         public BackgroundFilterConfiguration getBackgroundFilterConfiguration()
@@ -143,18 +167,7 @@ namespace RDK2_Radar_SignalProcessing_GUI
         /// <param name="frame"></param>
         public void feedDopplerFFT(ushort[] frame)
         {
-            // Allocate only once (avoid to much reallocation) --> Might be done once in the constructor as well
-            double[] timeBuffer = new double[radarConfiguration.SamplesPerChirp];
-
             int spectrumLen = (radarConfiguration.SamplesPerChirp / 2) + 1;
-
-            // Store matrix (range FFT per chirp)
-            System.Numerics.Complex[,] rangeFFTMatrix = new System.Numerics.Complex[radarConfiguration.ChirpsPerFrame, spectrumLen];
-
-            // Used to compute DBF and background
-            System.Numerics.Complex[] spectrumAvg0 = new System.Numerics.Complex[spectrumLen];
-            System.Numerics.Complex[] spectrumAvg1 = new System.Numerics.Complex[spectrumLen];
-            System.Numerics.Complex[] spectrumAvg2 = new System.Numerics.Complex[spectrumLen];
 
             System.Numerics.Complex[,]? dopplerFFTMatrixRx1 = null;
             System.Numerics.Complex[,]? dopplerFFTMatrixRx2 = null;
