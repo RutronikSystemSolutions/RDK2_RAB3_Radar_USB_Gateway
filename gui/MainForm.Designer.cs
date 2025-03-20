@@ -105,7 +105,7 @@
             dbfView.Dock = DockStyle.Fill;
             dbfView.Location = new Point(3, 3);
             dbfView.Name = "dbfView";
-            dbfView.Size = new Size(836, 361);
+            dbfView.Size = new Size(923, 400);
             dbfView.TabIndex = 6;
             // 
             // anglePresenceView
@@ -114,7 +114,7 @@
             anglePresenceView.Dock = DockStyle.Fill;
             anglePresenceView.Location = new Point(3, 3);
             anglePresenceView.Name = "anglePresenceView";
-            anglePresenceView.Size = new Size(836, 361);
+            anglePresenceView.Size = new Size(923, 400);
             anglePresenceView.TabIndex = 7;
             // 
             // menuStrip
@@ -190,7 +190,7 @@
             rangefftView.Dock = DockStyle.Fill;
             rangefftView.Location = new Point(0, 0);
             rangefftView.Name = "rangefftView";
-            rangefftView.Size = new Size(462, 400);
+            rangefftView.Size = new Size(463, 400);
             rangefftView.TabIndex = 10;
             // 
             // dopplerfftView
@@ -199,7 +199,7 @@
             dopplerfftView.Dock = DockStyle.Fill;
             dopplerfftView.Location = new Point(0, 0);
             dopplerfftView.Name = "dopplerfftView";
-            dopplerfftView.Size = new Size(418, 361);
+            dopplerfftView.Size = new Size(462, 400);
             dopplerfftView.TabIndex = 11;
             // 
             // statusStrip1
@@ -256,7 +256,7 @@
             // 
             rawSignalSplitContainer.Panel2.Controls.Add(rangefftView);
             rawSignalSplitContainer.Size = new Size(923, 400);
-            rawSignalSplitContainer.SplitterDistance = 457;
+            rawSignalSplitContainer.SplitterDistance = 456;
             rawSignalSplitContainer.TabIndex = 0;
             // 
             // timeSignalView
@@ -265,7 +265,7 @@
             timeSignalView.Dock = DockStyle.Fill;
             timeSignalView.Location = new Point(0, 0);
             timeSignalView.Name = "timeSignalView";
-            timeSignalView.Size = new Size(457, 400);
+            timeSignalView.Size = new Size(456, 400);
             timeSignalView.TabIndex = 14;
             // 
             // tabPage2
@@ -274,7 +274,7 @@
             tabPage2.Location = new Point(4, 29);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(842, 367);
+            tabPage2.Size = new Size(929, 406);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Processed";
             tabPage2.UseVisualStyleBackColor = true;
@@ -292,8 +292,8 @@
             // processedSplitContainer.Panel2
             // 
             processedSplitContainer.Panel2.Controls.Add(dopplerfftView);
-            processedSplitContainer.Size = new Size(836, 361);
-            processedSplitContainer.SplitterDistance = 414;
+            processedSplitContainer.Size = new Size(923, 400);
+            processedSplitContainer.SplitterDistance = 457;
             processedSplitContainer.TabIndex = 0;
             // 
             // energyOverTimeView
@@ -302,7 +302,7 @@
             energyOverTimeView.Dock = DockStyle.Fill;
             energyOverTimeView.Location = new Point(0, 0);
             energyOverTimeView.Name = "energyOverTimeView";
-            energyOverTimeView.Size = new Size(414, 361);
+            energyOverTimeView.Size = new Size(457, 400);
             energyOverTimeView.TabIndex = 14;
             // 
             // tabPage3
@@ -311,7 +311,7 @@
             tabPage3.Location = new Point(4, 29);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(842, 367);
+            tabPage3.Size = new Size(929, 406);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Angle view";
             tabPage3.UseVisualStyleBackColor = true;
@@ -322,7 +322,7 @@
             tabPage4.Location = new Point(4, 29);
             tabPage4.Name = "tabPage4";
             tabPage4.Padding = new Padding(3);
-            tabPage4.Size = new Size(842, 367);
+            tabPage4.Size = new Size(929, 406);
             tabPage4.TabIndex = 3;
             tabPage4.Text = "DBF View";
             tabPage4.UseVisualStyleBackColor = true;
@@ -341,6 +341,7 @@
             Controls.Add(menuStrip);
             MainMenuStrip = menuStrip;
             Name = "MainForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "RDK2 - Radar - Signal Processing - v1.0";
             Load += MainForm_Load;
             menuStrip.ResumeLayout(false);

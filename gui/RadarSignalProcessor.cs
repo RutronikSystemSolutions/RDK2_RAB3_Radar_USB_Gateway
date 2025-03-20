@@ -295,7 +295,6 @@ namespace RDK2_Radar_SignalProcessing_GUI
                 {
                     somethingDetected[antennaIndex] = true;
                     rangeOfMax[antennaIndex] = rangeForMaxAmplitude;
-                    System.Diagnostics.Debug.WriteLine("range: " + rangeForMaxAmplitude.ToString());
                 }
                 else somethingDetected[antennaIndex] = false;
             }
@@ -339,7 +338,6 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
         private double convertDBFColToMeters(int colIndex)
         {
-            System.Diagnostics.Debug.WriteLine("Col index: " + colIndex.ToString());
             double bandWidth = radarConfiguration.EndFrequency - radarConfiguration.StartFrequency;
             double celerity = 299792458;
             double slope = bandWidth / (radarConfiguration.SamplesPerChirp * (1 / radarConfiguration.SamplingRate));
@@ -348,7 +346,6 @@ namespace RDK2_Radar_SignalProcessing_GUI
             double fractionFs = colIndex / ((fftLen - 1) * 2);
             double freq = fractionFs * radarConfiguration.SamplingRate;
             double rangeMeters = (celerity * freq) / (2 * slope);
-            System.Diagnostics.Debug.WriteLine("Col rangeMeters: " + rangeMeters.ToString());
             return rangeMeters;
         }
 

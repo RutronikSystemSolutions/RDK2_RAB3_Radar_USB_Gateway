@@ -56,7 +56,6 @@ namespace RDK2_Radar_SignalProcessing_GUI
         private void RadarSignalProcessor_OnNewTargetDetected(object sender, bool detected, double angle, double range)
         {
             anglePresenceView.SignalPresenceDetected(detected, angle, range);
-            System.Diagnostics.Debug.WriteLine("Detected: " + angle.ToString() + "° range: " + range.ToString());
         }
 
         private void RadarSignalProcessor_OnNewDBFOutput(object sender, System.Numerics.Complex[,] dbfOutput)

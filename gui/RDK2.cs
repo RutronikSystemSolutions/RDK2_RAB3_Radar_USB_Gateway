@@ -106,10 +106,6 @@ namespace RDK2_Radar_SignalProcessing_GUI
             BackgroundWorker worker = (BackgroundWorker)sender;
             port.ReadExisting();
 
-            // One frame => 4096 bytes (128 * 16 samples)
-            //int samplesPerChirp = 128;
-            //int chirpsPerFrame = 16;
-            //int antennaCount = 1;
             int samplesPerChirp = 128;
             int chirpsPerFrame = 64;
             int antennaCount = 2;
@@ -118,23 +114,44 @@ namespace RDK2_Radar_SignalProcessing_GUI
 
             byte[] readBuffer = new byte[bytesPerFrame];
 
-            int offset = 0;
-            int remaining = bytesPerFrame;
-
             for (; ;)
             {
-                int available = port.BytesToRead;
-                if (available > 0)
+                // Wait until something available in buffer
+                for(; ;)
                 {
-                    int toRead = (available > remaining) ? remaining: available;
-                    port.Read(readBuffer, offset, toRead);
-
-                    offset += toRead;
-                    remaining -= toRead;
+                    int available = port.BytesToRead;
+                    if (available > 0) break;
+                    System.Threading.Thread.Sleep(10);
                 }
 
-                if (remaining == 0)
+                for (; ; )
                 {
+                    int offset = 0;
+                    int remaining = bytesPerFrame;
+                    bool gotTimeout = false;
+
+                    for (; ; )
+                    {
+                        int readSize = 0;
+                        try
+                        {
+                            readSize = port.Read(readBuffer, offset, remaining);
+                        }
+                        catch (System.TimeoutException)
+                        {
+                            gotTimeout = true;
+                            break;
+                        }
+                        offset += readSize;
+                        remaining -= readSize;
+                        if (remaining == 0) break;
+                    }
+
+                    if (gotTimeout)
+                    {
+                        break;
+                    }
+
                     // Frame is available
                     var samples = new ushort[samplesPerFrame];
                     for (int i = 0; i < samplesPerFrame; i++)
@@ -143,9 +160,6 @@ namespace RDK2_Radar_SignalProcessing_GUI
                     }
 
                     worker.ReportProgress(WorkerReportFrame, samples);
-
-                    offset = 0;
-                    remaining = bytesPerFrame;
                 }
             }
         }
