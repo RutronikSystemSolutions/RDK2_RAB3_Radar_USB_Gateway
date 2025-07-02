@@ -6,7 +6,7 @@ This code example demonstrates digital signal processing implemented on the comp
 
 ## Requirements
 
-- [ModusToolbox® software](https://www.infineon.com/cms/en/design-support/tools/sdk/modustoolbox-software/) **v3.x** [built with **v3.1**]
+- [ModusToolbox® software](https://www.infineon.com/cms/en/design-support/tools/sdk/modustoolbox-software/) **v2025.4.0** [built with **v3.1**]
 - [RAB3-Radar](https://www.rutronik24.com/product/rutronik/rab3radar/23169671.html)
 - [RDK2](https://www.rutronik24.fr/produit/rutronik/rdk2/16440182.html)
 
@@ -24,7 +24,7 @@ To program the RDK2, use the Kit Prog3 USB connector.
 
 ## Operation
 
-1) Plug a USB-C connector to the side of the RDK2 and connect the cable to your computer.
+1) Plug a USB-C connector into the side of the RDK2 and connect the cable to your computer.
 
 <img src="pictures/rdk2_rab3_usb_connection.png" style="zoom:15%;" />
 
@@ -46,7 +46,7 @@ Use the Infineon “Radar Fusion GUI” tool to generate a new version of the fi
 ## Libraries
 
 The project contains a local copy of the sensor-xensiv-bgt60trxx.
-Modifications have been made inside the file xensiv_bgt60trxx_mtb.c to detect timeout during SPI transfers.
+Modifications have been made inside the file xensiv_bgt60trxx_mtb.c to detect timeouts during SPI transfers.
 
 ## Legal Disclaimer
 
